@@ -568,7 +568,7 @@ def get_iotproxy_status():
 
 def get_my_wifi():
   ssid = run_cmd(GET_WIFI_CMD)[:-1]
-  l = len(wifi)
+  l = len(ssid)
   if l > 11:
       wifi = ssid[:4] + ".." + ssid[len(ssid)-5:]
   else:
