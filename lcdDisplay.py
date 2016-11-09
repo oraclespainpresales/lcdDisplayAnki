@@ -50,6 +50,7 @@ KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 piusergroup=1000
 
+demozone_file="/home/pi/demozone"
 race_status_file="/home/pi/setup/race_status.dat"
 race_count_file="/home/pi/setup/race_count.dat"
 race_lap_Thermo_file="/home/pi/setup/race_lap_Thermo.dat"
@@ -164,7 +165,7 @@ def initDisplay(cad):
 def wifiDisplay(cad):
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("Wifi: "+get_my_wifi())
+  cad.lcd.write("Wifi:"+get_my_wifi())
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(get_my_ip())
   cad.lcd.set_cursor(15, 1)
@@ -204,13 +205,6 @@ def raceLapsDisplay(cad):
   cad.lcd.write("RACE TH:%02d GS:%02d" % (lap_Thermo,lap_GroundShock))
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write("LAPS SK:%02d GU:%02d" % (lap_Skull,lap_Guardian))
-
-def piIdDisplay(cad):
-  cad.lcd.clear()
-  cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("PiId:")
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(getPiId())
 
 def resetSniffer(event,snifferNumber):
   event.chip.lcd.clear()
@@ -564,7 +558,13 @@ def get_iotproxy_status():
   return run_cmd(CHECK_IOTPROXY_STATUS_CMD)
 
 def get_my_wifi():
-  return run_cmd(GET_WIFI_CMD)[:-1]
+  ssid = run_cmd(GET_WIFI_CMD)[:-1]
+  l = len(wifi)
+  if l > 11:
+      wifi = ssid[:4] + ".." + ssid[len(ssid)-5:]
+  else:
+      wifi = ssid
+  return wifi
 
 def get_my_ip():
   return run_cmd(GET_IP_CMD)[:-1]
@@ -586,15 +586,8 @@ def check_websocket():
    return run_cmd(CHECK_WEBSOCKET_CMD)
 
 def getPiName():
-  with open('/home/pi/Desktop/PiInfo.txt', 'r') as f:
-    first_line = f.readline()
-    PiName = first_line.split("=",1)[1]
-    PiName = PiName[0:-1] # Strip trailing cr
-    if PiName.startswith('"'):
-      PiName = PiName[1:]
-    if PiName.endswith('"'):
-      PiName = PiName[0:-1]
-    return(PiName)
+  with open(demozone_file, 'r') as f:
+    return(f.readline())
 
 def getPiVersion():
   with open('/home/pi/piImgVersion.txt', 'r') as f:
