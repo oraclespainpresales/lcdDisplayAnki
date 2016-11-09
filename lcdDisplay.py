@@ -615,6 +615,7 @@ SETUP = os.path.isfile(demozone_file)
 if not SETUP:
     maxInfoDisplay = 1
 
+initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
   listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
