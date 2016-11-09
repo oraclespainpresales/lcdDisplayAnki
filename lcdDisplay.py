@@ -158,18 +158,16 @@ def displayInfoRotation(cad):
     print "No more pages"
 
 def initDisplay(cad):
-  cad.lcd.clear()
-  cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("Pi Version:"+getPiVersion())
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(getPiName())
-
-def waitSetup(cad):
-  cad.lcd.clear()
-  cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("PRESS RIGHT BTN")
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write("TO START SETUP")
+    cad.lcd.clear()
+    cad.lcd.set_cursor(0, 0)
+    if not SETUP:
+        cad.lcd.write("PRESS RIGHT BTN")
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("TO START SETUP")
+    else:
+        cad.lcd.write("Pi Version:"+getPiVersion())
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write(getPiName())
 
 def wifiDisplay(cad):
   cad.lcd.clear()
@@ -614,11 +612,8 @@ cad.lcd.blink_off()
 cad.lcd.cursor_off()
 
 SETUP = os.path.isfile(demozone_file)
-
 if not SETUP:
-    waitSetup(cad)
-else:
-    initDisplay(cad)
+    maxInfoDisplay = 1
 
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
