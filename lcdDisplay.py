@@ -7,6 +7,8 @@ import json
 import pprint
 import os
 
+SETUP=False
+
 INIT=0
 WIFI=1
 SNIFFERS=2
@@ -50,7 +52,7 @@ KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 piusergroup=1000
 
-demozone_file="/home/pi/demozone"
+demozone_file="/home/pi/setup/demozone.dat"
 race_status_file="/home/pi/setup/race_status.dat"
 race_count_file="/home/pi/setup/race_count.dat"
 race_lap_Thermo_file="/home/pi/setup/race_lap_Thermo.dat"
@@ -161,6 +163,13 @@ def initDisplay(cad):
   cad.lcd.write("Pi Version:"+getPiVersion())
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(getPiName())
+
+def waitSetup(cad):
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("PRESS RIGHT BTN")
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write("TO START SETUP")
 
 def wifiDisplay(cad):
   cad.lcd.clear()
@@ -603,7 +612,13 @@ cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
-initDisplay(cad)
+
+SETUP = os.path.isfile(demozone_file)
+
+if not SETUP:
+    waitSetup(cad)
+else:
+    initDisplay(cad)
 
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
