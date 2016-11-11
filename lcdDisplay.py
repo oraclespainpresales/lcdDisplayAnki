@@ -624,7 +624,7 @@ def getPiId():
   except (IOError):
       print "%s file not found. Creating..." % file
       serial = getserial()
-      with open(file,"w+") as f:
+      with open(pi_id_file,"w+") as f:
         f.write(serial)
       return(serial)
 
