@@ -90,15 +90,18 @@ def read_file(filename):
       print "%s file not found!!!"
       return ""
 
-def sync_bics():
-  global demozone_file
+def get_dbcs():
   global dbcs_host_file
-
   dbcs = read_file(dbcs_host_file)
+  return(dbcs.rstrip())
+
+def get_demozone():
+  global demozone_file
   demozone = read_file(demozone_file)
-  dbcs = dbcs.rstrip()
-  demozone = demozone.rstrip()
-  url = dbcs + "/apex/pdb1/anki/iotcs/setup/" + demozone
+  return(demozone.rstrip())
+
+def sync_bics():
+  url = get_dbcs() + "/apex/pdb1/anki/iotcs/setup/" + get_demozone()
   iotcs = getRest("", url)
   if iotcs.status_code == 200:
     data = json.loads(iotcs.content)
@@ -331,6 +334,7 @@ def stop_race(event):
 def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
   global SETUPSTEP
+  global dbcs
 #  print "Button %s at screen %s" % (button,screen)
   if button == BUTTON5 and not SETUP:
     # SETUP mode
@@ -348,7 +352,7 @@ def handleButton(button, screen, event):
       cad.lcd.write("RETRIEVING DATA")
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("FOR THIS RPi...")
-      url = dbcs + "/apex/pdb1/anki/demozone/rpi/" + etPiId()
+      url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
       result = getRest("", url)
       if result.status_code == 200:
         data = json.loads(result.content)
