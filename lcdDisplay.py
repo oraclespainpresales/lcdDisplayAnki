@@ -8,6 +8,7 @@ import pprint
 import os
 
 SETUP=False
+SETUPSTEP=0
 
 INIT=0
 WIFI=1
@@ -332,9 +333,26 @@ def handleButton(button, screen, event):
 #  print "Button %s at screen %s" % (button,screen)
   if button == BUTTON5 and not SETUP:
     # SETUP mode
-    cad.lcd.clear()
-    cad.lcd.set_cursor(0, 0)
-    cad.lcd.write(getPiId())
+    if SETUPSTEP == 0:
+      SETUPSTEP = SETUPSTEP + 1
+      cad.lcd.clear()
+      cad.lcd.set_cursor(0, 0)
+      cad.lcd.write(getPiId())
+      cad.lcd.set_cursor(0, 1)
+      cad.lcd.write("RIGHTBTN TO CONT")
+    elif SETUPSTEP == 1:
+      SETUPSTEP = SETUPSTEP + 1
+      cad.lcd.clear()
+      cad.lcd.set_cursor(0, 0)
+      cad.lcd.write("RETRIEVING DATA")
+      cad.lcd.set_cursor(0, 1)
+      cad.lcd.write("FOR THIS RPi")
+    elif SETUPSTEP == 2:
+      SETUPSTEP = SETUPSTEP + 1
+    elif SETUPSTEP == 3:
+      SETUPSTEP = SETUPSTEP + 1
+    elif SETUPSTEP == 4:
+      SETUPSTEP = SETUPSTEP + 1
   elif screen == INIT:
     # 1: REBOOT
     # 2: POWEROFF
@@ -641,6 +659,7 @@ cad.lcd.cursor_off()
 SETUP = os.path.isfile(demozone_file)
 if not SETUP:
     maxInfoDisplay = 1
+    SETUPSTEP=0
 
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
