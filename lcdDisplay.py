@@ -330,7 +330,12 @@ def stop_race(event):
 def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
 #  print "Button %s at screen %s" % (button,screen)
-  if screen == INIT:
+  if button == BUTTON5 and not SETUP:
+    # SETUP mode
+    cad.lcd.clear()
+    cad.lcd.set_cursor(0, 0)
+    cad.lcd.write(getPiId())
+  elif screen == INIT:
     # 1: REBOOT
     # 2: POWEROFF
     # 5: CONFIRM
