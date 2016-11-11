@@ -52,6 +52,8 @@ KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 piusergroup=1000
 
+pi_img_version_file="/home/pi/setup/PiImgVersion.dat"
+pi_id_file="/home/pi/setup/PiId.dat"
 demozone_file="/home/pi/setup/demozone.dat"
 race_status_file="/home/pi/setup/race_status.dat"
 race_count_file="/home/pi/setup/race_count.dat"
@@ -597,14 +599,34 @@ def getPiName():
     return(f.readline())
 
 def getPiVersion():
-  with open('/home/pi/piImgVersion.txt', 'r') as f:
+  with open(pi_img_version_file, 'r') as f:
     first_line = f.readline()
     return(first_line)
 
+def getserial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+  return cpuserial
+
 def getPiId():
-  with open('/home/pi/PiId.txt', 'r') as f:
-    first_line = f.readline().rstrip()
-    return(first_line)
+  try:
+    with open(pi_id_file, 'r') as f:
+      first_line = f.readline().rstrip()
+      return(first_line)
+  except (IOError):
+      print "%s file not found. Creating..." % file
+      serial = getserial()
+      with open(file,"w+") as f:
+        f.write(serial)
+      return(serial)
 
 cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
