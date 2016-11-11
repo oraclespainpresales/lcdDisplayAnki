@@ -330,6 +330,7 @@ def stop_race(event):
 
 def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
+  global SETUPSTEP
 #  print "Button %s at screen %s" % (button,screen)
   if button == BUTTON5 and not SETUP:
     # SETUP mode
