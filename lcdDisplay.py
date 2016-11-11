@@ -347,7 +347,23 @@ def handleButton(button, screen, event):
       cad.lcd.set_cursor(0, 0)
       cad.lcd.write("RETRIEVING DATA")
       cad.lcd.set_cursor(0, 1)
-      cad.lcd.write("FOR THIS RPi")
+      cad.lcd.write("FOR THIS RPi...")
+      url = dbcs + "/apex/pdb1/anki/demozone/rpi/" + etPiId()
+      result = getRest("", url)
+      if result.status_code == 200:
+        data = json.loads(result.content)
+        demozone = data["items"][0]["id"]
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write("ZONE:" + demozone)
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("RIGHTBTN TO CONT")
+
+
+
+
+
+
     elif SETUPSTEP == 2:
       SETUPSTEP = SETUPSTEP + 1
     elif SETUPSTEP == 3:
@@ -646,7 +662,7 @@ def getPiId():
       first_line = f.readline().rstrip()
       return(first_line)
   except (IOError):
-      print "%s file not found. Creating..." % file
+      print "%s file not found. Creating..." % pi_id_file
       serial = getserial()
       with open(pi_id_file,"w+") as f:
         f.write(serial)
