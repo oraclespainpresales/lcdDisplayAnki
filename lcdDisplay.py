@@ -416,7 +416,7 @@ def handleButton(button, screen, event):
         	  cad.lcd.set_cursor(0, 1)
         	  cad.lcd.write("CONFIRM RIGHTBTN")
     elif button == BUTTON5:
-        if buttonWaitingForConfirmation != -1
+        if buttonWaitingForConfirmation != -1:
             if screen == INIT:
                 if buttonWaitingForConfirmation == BUTTON1:
                     # REBOOT
