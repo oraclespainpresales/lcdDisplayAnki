@@ -459,12 +459,20 @@ def handleButton(button, screen, event):
               result = getRest("", url)
               if result.status_code == 200:
                 data = json.loads(result.content)
-                demozone = data["items"][0]["id"]
-                cad.lcd.clear()
-                cad.lcd.set_cursor(0, 0)
-                cad.lcd.write("ZONE:" + demozone)
-                cad.lcd.set_cursor(0, 1)
-                cad.lcd.write("RIGHTBTN TO CONT")
+                if len(data["items"]) > 0:
+                    demozone = data["items"][0]["id"]
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("ZONE:" + demozone)
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("RIGHTBTN TO CONT")
+                else:
+                    SETUPSTEP = 0
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("RPi NOT FOUND")
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("RIGHTBTN TO CONT")
             elif SETUPSTEP == 2:
               SETUPSTEP = SETUPSTEP + 1
             elif SETUPSTEP == 3:
