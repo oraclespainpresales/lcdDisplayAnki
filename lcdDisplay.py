@@ -752,7 +752,7 @@ def setDemozoneFile(_demozone):
 def setRedirectsFile(_proxyport):
     with open(SETUP_redirects_file, 'r+') as f:
         data = f.read()
-        data = data.replace("[PORT]", _proxyport)
+        data = data.replace("[PORT]", str(_proxyport))
         f.seek(0)
         f.write(data)
         f.truncate()
