@@ -441,7 +441,9 @@ def handleButton(button, screen, event):
                 displayInfoRotation(event.chip)
         else:
             # SETUP mode
-            if SETUPSTEP == 0:
+            if SETUPSTEP == -1:
+              initDisplay(cad)
+            elif SETUPSTEP == 0:
               SETUPSTEP = SETUPSTEP + 1
               cad.lcd.clear()
               cad.lcd.set_cursor(0, 0)
@@ -467,7 +469,7 @@ def handleButton(button, screen, event):
                     cad.lcd.set_cursor(0, 1)
                     cad.lcd.write("RIGHTBTN TO CONT")
                 else:
-                    SETUPSTEP = 0
+                    SETUPSTEP = -1
                     cad.lcd.clear()
                     cad.lcd.set_cursor(0, 0)
                     cad.lcd.write("RPi NOT FOUND")
