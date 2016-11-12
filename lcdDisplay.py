@@ -336,7 +336,7 @@ def handleButton(button, screen, event):
   global SETUPSTEP
   global dbcs
 #  print "Button %s at screen %s" % (button,screen)
-  if screen == INIT:
+  if screen == INIT and SETUP:
     # 1: REBOOT
     # 2: POWEROFF
     # 5: CONFIRM
@@ -369,39 +369,7 @@ def handleButton(button, screen, event):
 	  if buttonWaitingForConfirmation != -1:
 	    displayInfoRotation(event.chip)
 	    buttonWaitingForConfirmation = -1
-  elif button == BUTTON5 and not SETUP:
-    # SETUP mode
-    if SETUPSTEP == 0:
-      SETUPSTEP = SETUPSTEP + 1
-      cad.lcd.clear()
-      cad.lcd.set_cursor(0, 0)
-      cad.lcd.write(getPiId())
-      cad.lcd.set_cursor(0, 1)
-      cad.lcd.write("RIGHTBTN TO CONT")
-    elif SETUPSTEP == 1:
-      SETUPSTEP = SETUPSTEP + 1
-      cad.lcd.clear()
-      cad.lcd.set_cursor(0, 0)
-      cad.lcd.write("RETRIEVING DATA")
-      cad.lcd.set_cursor(0, 1)
-      cad.lcd.write("FOR THIS RPi...")
-      url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
-      result = getRest("", url)
-      if result.status_code == 200:
-        data = json.loads(result.content)
-        demozone = data["items"][0]["id"]
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write("ZONE:" + demozone)
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("RIGHTBTN TO CONT")
-    elif SETUPSTEP == 2:
-      SETUPSTEP = SETUPSTEP + 1
-    elif SETUPSTEP == 3:
-      SETUPSTEP = SETUPSTEP + 1
-    elif SETUPSTEP == 4:
-      SETUPSTEP = SETUPSTEP + 1
-  elif screen == WIFI:
+  elif screen == WIFI and SETUP:
     # 1: RESET WIFI
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
@@ -425,6 +393,84 @@ def handleButton(button, screen, event):
 	  if buttonWaitingForConfirmation != -1:
 	    displayInfoRotation(event.chip)
 	    buttonWaitingForConfirmation = -1
+  elif not SETUP:
+    if button == BUTTON1 or button == BUTTON2:
+        if screen == INIT:
+        	  buttonWaitingForConfirmation = button
+        	  if button == BUTTON1:
+        	     msg = "REBOOT REQUEST"
+        	  else:
+        	     msg = "POWEROFF REQUEST"
+        	  cad.lcd.clear()
+        	  cad.lcd.set_cursor(0, 0)
+        	  cad.lcd.write(msg)
+        	  cad.lcd.set_cursor(0, 1)
+        	  cad.lcd.write("CONFIRM RIGHTBTN")
+        elif screen == WIFI:
+            if button == BUTTON1:
+        	  buttonWaitingForConfirmation = button
+        	  msg = "WIFI RST REQUEST"
+        	  cad.lcd.clear()
+        	  cad.lcd.set_cursor(0, 0)
+        	  cad.lcd.write(msg)
+        	  cad.lcd.set_cursor(0, 1)
+        	  cad.lcd.write("CONFIRM RIGHTBTN")
+    elif button == BUTTON5:
+        if buttonWaitingForConfirmation != -1
+            if screen == INIT:
+                if buttonWaitingForConfirmation == BUTTON1:
+                    # REBOOT
+                    CMD = REBOOT_CMD
+                    msg = "REBOOTING"
+                else:
+                    # POWEROFF
+                    CMD = POWEROFF_CMD
+                    msg = "HALTING SYSTEM"
+                buttonWaitingForConfirmation = -1
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write(msg)
+                run_cmd(CMD)
+            elif screen == WIFI:
+                buttonWaitingForConfirmation = -1
+                msg = "RESETING WIFI"
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write(msg)
+                run_cmd(RESET_WIFI_CMD)
+                displayInfoRotation(event.chip)
+        else:
+            # SETUP mode
+            if SETUPSTEP == 0:
+              SETUPSTEP = SETUPSTEP + 1
+              cad.lcd.clear()
+              cad.lcd.set_cursor(0, 0)
+              cad.lcd.write(getPiId())
+              cad.lcd.set_cursor(0, 1)
+              cad.lcd.write("RIGHTBTN TO CONT")
+            elif SETUPSTEP == 1:
+              SETUPSTEP = SETUPSTEP + 1
+              cad.lcd.clear()
+              cad.lcd.set_cursor(0, 0)
+              cad.lcd.write("RETRIEVING DATA")
+              cad.lcd.set_cursor(0, 1)
+              cad.lcd.write("FOR THIS RPi...")
+              url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
+              result = getRest("", url)
+              if result.status_code == 200:
+                data = json.loads(result.content)
+                demozone = data["items"][0]["id"]
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write("ZONE:" + demozone)
+                cad.lcd.set_cursor(0, 1)
+                cad.lcd.write("RIGHTBTN TO CONT")
+            elif SETUPSTEP == 2:
+              SETUPSTEP = SETUPSTEP + 1
+            elif SETUPSTEP == 3:
+              SETUPSTEP = SETUPSTEP + 1
+            elif SETUPSTEP == 4:
+              SETUPSTEP = SETUPSTEP + 1
   elif screen == SNIFFERS:
     # 1: RESET SNIFFER FOR THERMO
     # 2: RESET SNIFFER FOR GROUND SHOCK
