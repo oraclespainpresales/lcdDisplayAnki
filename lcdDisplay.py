@@ -6,6 +6,7 @@ import requests
 import json
 import pprint
 import os
+import shutil
 
 SETUP=False
 SETUPSTEP=0
@@ -345,6 +346,7 @@ def handleButton(button, screen, event):
   if screen == INIT and SETUP:
     # 1: REBOOT
     # 2: POWEROFF
+    # 3: RESET RPi
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
 	  # Confirmation to previous command
@@ -352,20 +354,39 @@ def handleButton(button, screen, event):
 	    # REBOOT
 	    CMD = REBOOT_CMD
 	    msg = "REBOOTING"
-	  else:
+      elif buttonWaitingForConfirmation == BUTTON2:
 	    # POWEROFF
 	    CMD = POWEROFF_CMD
 	    msg = "HALTING SYSTEM"
+	  else:
+	    # RESET RPi
+        set_race_count(0)
+        os.remove(pi_id_file)
+        os.remove(demozone_file)
+        shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
+        os.remove(redirects_file)
+        shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
+        deleteContent(race_lap_Thermo_file)
+        deleteContent(race_lap_GroundShock_file)
+        deleteContent(race_lap_Skull_file)
+        deleteContent(race_lap_Guardian_file)
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write("RESET COMPLETE")
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("PLEASE REBOOT")
 	  cad.lcd.clear()
 	  cad.lcd.set_cursor(0, 0)
 	  cad.lcd.write(msg)
 	  run_cmd(CMD)
-    if button == BUTTON1 or button == BUTTON2:
+    if button == BUTTON1 or button == BUTTON2 or button == BUTTON3:
 	  buttonWaitingForConfirmation = button
 	  if button == BUTTON1:
 	     msg = "REBOOT REQUEST"
-	  else:
+      elif button == BUTTON2:
 	     msg = "POWEROFF REQUEST"
+	  else:
+	     msg = "RPi RESET RQUEST"
 	  cad.lcd.clear()
 	  cad.lcd.set_cursor(0, 0)
 	  cad.lcd.write(msg)
@@ -758,6 +779,10 @@ def setRedirectsFile(_proxyport):
         f.truncate()
         f.close()
     os.rename(SETUP_redirects_file, redirects_file)
+
+def deleteContent(fName):
+    with open(fName, "w"):
+        pass
 
 cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
