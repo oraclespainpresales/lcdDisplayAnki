@@ -375,7 +375,7 @@ def handleButton(button, screen, event):
 	    cad.lcd.write("RESET COMPLETE")
 	    cad.lcd.set_cursor(0, 1)
 	    cad.lcd.write("PLEASE REBOOT")
-        return
+	    return
 	  cad.lcd.clear()
 	  cad.lcd.set_cursor(0, 0)
 	  cad.lcd.write(msg)
