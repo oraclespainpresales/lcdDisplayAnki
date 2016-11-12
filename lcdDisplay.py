@@ -486,7 +486,7 @@ def handleButton(button, screen, event):
               cad.lcd.write("RETRIEVING DATA")
               cad.lcd.set_cursor(0, 1)
               cad.lcd.write("FOR THIS RPi...")
-              url = get_dbcs() + "/apexx/pdb1/anki/demozone/rpi/" + getPiId()
+              url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
               result = getRest("", url)
               if result.status_code == 200:
                 SETUPSTEP = SETUPSTEP + 1
