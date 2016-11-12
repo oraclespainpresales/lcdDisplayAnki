@@ -383,7 +383,7 @@ def handleButton(button, screen, event):
 	  buttonWaitingForConfirmation = button
 	  if button == BUTTON1:
 	     msg = "REBOOT REQUEST"
-      elif button == BUTTON2:
+	  elif button == BUTTON2:
 	     msg = "POWEROFF REQUEST"
 	  else:
 	     msg = "RPi RESET RQUEST"
