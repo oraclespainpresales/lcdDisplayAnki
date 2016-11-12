@@ -9,6 +9,10 @@ import os
 
 SETUP=False
 SETUPSTEP=0
+demozone=""
+proxyport=-1
+SETUP_demozone_file="/home/pi/setup/demozone.TOSETUP"
+SETUP_redirects_file="/home/pi/setup/redirects.TOSETUP"
 
 INIT=0
 WIFI=1
@@ -30,6 +34,19 @@ BUTTONMIDDLE=5
 BUTTONLEFT=6
 BUTTONRIGHT=7
 
+pi_img_version_file="/home/pi/setup/PiImgVersion.dat"
+pi_id_file="/home/pi/setup/PiId.dat"
+demozone_file="/home/pi/setup/demozone.dat"
+redirects_file="/home/pi/setup/redirects"
+race_status_file="/home/pi/setup/race_status.dat"
+race_count_file="/home/pi/setup/race_count.dat"
+race_lap_Thermo_file="/home/pi/setup/race_lap_Thermo.dat"
+race_lap_GroundShock_file="/home/pi/setup/race_lap_Ground Shock.dat"
+race_lap_Skull_file="/home/pi/setup/race_lap_Skull.dat"
+race_lap_Guardian_file="/home/pi/setup/race_lap_Guardian.dat"
+race_lap_file="/home/pi/setup/race_lap_%s.dat"
+dbcs_host_file="/home/pi/setup/dbcs.dat"
+
 GET_IP_CMD = "hostname --all-ip-addresses"
 GET_WIFI_CMD = "sudo iwconfig wlan0 | grep ESSID | awk -F\":\" '{print $2}' | awk -F'\"' '{print $2}'"
 RESET_WIFI_CMD = "sudo ifdown wlan0;sleep 5;sudo ifup wlan0"
@@ -42,7 +59,7 @@ RESET_RACE_DATA_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclec
 CHECK_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep $DRONEPORT | wc -l\""
 CHECK_NODEUP_CMD = "wget -q -T 5 --tries 2 -O - http://$reverseProxy:$DRONEPORT/drone > /dev/null && echo OK || echo NOK"
 CHECK_WEBSOCKET_CMD = "wget -q -T 5 --tries 1 -O - http://$reverseProxy:$DRONEPORT/drone/ping > /dev/null && echo OK || echo NOK"
-RESET_AUTOSSH_CMD = "pkill autossh;/home/pi/bin/setupReverseSSHPorts.sh /home/pi/bin/redirects"
+RESET_AUTOSSH_CMD = "pkill autossh;/home/pi/bin/setupReverseSSHPorts.sh " + redirects_file
 RESET_NODEJS_CMD = "forever stop drone;forever start --uid drone --append /home/pi/node/dronecontrol/server.js"
 USB_PORTS_CMD = "ls -1 /dev/ttyU* 2>/dev/null | wc -l"
 SNIFFERS_RUNNING_CMD = "ps -ef | grep -v grep | grep  ttyUSB | wc -l"
@@ -52,19 +69,6 @@ KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 piusergroup=1000
-
-pi_img_version_file="/home/pi/setup/PiImgVersion.dat"
-pi_id_file="/home/pi/setup/PiId.dat"
-demozone_file="/home/pi/setup/demozone.dat"
-race_status_file="/home/pi/setup/race_status.dat"
-race_count_file="/home/pi/setup/race_count.dat"
-race_lap_Thermo_file="/home/pi/setup/race_lap_Thermo.dat"
-race_lap_GroundShock_file="/home/pi/setup/race_lap_Ground Shock.dat"
-race_lap_Skull_file="/home/pi/setup/race_lap_Skull.dat"
-race_lap_Guardian_file="/home/pi/setup/race_lap_Guardian.dat"
-race_lap_file="/home/pi/setup/race_lap_%s.dat"
-demozone_file="/home/pi/setup/demozone.dat"
-dbcs_host_file="/home/pi/setup/dbcs.dat"
 
 def getRest(message, url):
   #data_json = json.dumps(message)
@@ -335,6 +339,8 @@ def handleButton(button, screen, event):
   global buttonWaitingForConfirmation
   global SETUPSTEP
   global dbcs
+  global demozone
+  global proxyport
 #  print "Button %s at screen %s" % (button,screen)
   if screen == INIT and SETUP:
     # 1: REBOOT
@@ -452,6 +458,7 @@ def handleButton(button, screen, event):
               cad.lcd.set_cursor(0, 1)
               cad.lcd.write("RIGHTBTN TO CONT")
             elif SETUPSTEP == 1:
+              # Retrieving RPi data from DB
               SETUPSTEP = SETUPSTEP + 1
               cad.lcd.clear()
               cad.lcd.set_cursor(0, 0)
@@ -464,6 +471,7 @@ def handleButton(button, screen, event):
                 data = json.loads(result.content)
                 if len(data["items"]) > 0:
                     demozone = data["items"][0]["id"]
+                    proxyport = data["items"][0]["proxyport"]
                     cad.lcd.clear()
                     cad.lcd.set_cursor(0, 0)
                     cad.lcd.write("ZONE:" + demozone)
@@ -477,11 +485,21 @@ def handleButton(button, screen, event):
                     cad.lcd.set_cursor(0, 1)
                     cad.lcd.write("RIGHTBTN TO CONT")
             elif SETUPSTEP == 2:
+              # Setting all files based on retrieved data
               SETUPSTEP = SETUPSTEP + 1
+              setDemozoneFile(demozone)
+              setRedirectsFile(proxyport)
+              cad.lcd.clear()
+              cad.lcd.set_cursor(0, 0)
+              cad.lcd.write("SETUP COMPLETE")
+              cad.lcd.set_cursor(0, 1)
+              cad.lcd.write("PLEASE REBOOT")
             elif SETUPSTEP == 3:
-              SETUPSTEP = SETUPSTEP + 1
-            elif SETUPSTEP == 4:
-              SETUPSTEP = SETUPSTEP + 1
+              cad.lcd.clear()
+              cad.lcd.set_cursor(0, 0)
+              cad.lcd.write("SETUP COMPLETE")
+              cad.lcd.set_cursor(0, 1)
+              cad.lcd.write("PLEASE REBOOT")
   elif screen == SNIFFERS:
     # 1: RESET SNIFFER FOR THERMO
     # 2: RESET SNIFFER FOR GROUND SHOCK
@@ -722,6 +740,24 @@ def getPiId():
       with open(pi_id_file,"w+") as f:
         f.write(serial)
       return(serial)
+
+def setDemozoneFile(_demozone):
+    with open(SETUP_demozone_file, 'r+') as f:
+        f.seek(0)
+        f.write(_demozone)
+        f.truncate()
+        f.close()
+    os.rename(SETUP_demozone_file, demozone_file)
+
+def setRedirectsFile(_proxyport):
+    with open(SETUP_redirects_file, 'r+') as f:
+        data = f.read()
+        data = data.replace("[PORT]", _proxyport)
+        f.seek(0)
+        f.write(data)
+        f.truncate()
+        f.close()
+    os.rename(SETUP_redirects_file, redirects_file)
 
 cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
