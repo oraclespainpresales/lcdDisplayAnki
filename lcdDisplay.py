@@ -354,7 +354,7 @@ def handleButton(button, screen, event):
 	    # REBOOT
 	    CMD = REBOOT_CMD
 	    msg = "REBOOTING"
-      elif buttonWaitingForConfirmation == BUTTON2:
+	  elif buttonWaitingForConfirmation == BUTTON2:
 	    # POWEROFF
 	    CMD = POWEROFF_CMD
 	    msg = "HALTING SYSTEM"
