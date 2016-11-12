@@ -481,15 +481,15 @@ def handleButton(button, screen, event):
               cad.lcd.write("RIGHTBTN TO CONT")
             elif SETUPSTEP == 1:
               # Retrieving RPi data from DB
-              SETUPSTEP = SETUPSTEP + 1
               cad.lcd.clear()
               cad.lcd.set_cursor(0, 0)
               cad.lcd.write("RETRIEVING DATA")
               cad.lcd.set_cursor(0, 1)
               cad.lcd.write("FOR THIS RPi...")
-              url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
+              url = get_dbcs() + "/apexx/pdb1/anki/demozone/rpi/" + getPiId()
               result = getRest("", url)
               if result.status_code == 200:
+                SETUPSTEP = SETUPSTEP + 1
                 data = json.loads(result.content)
                 if len(data["items"]) > 0:
                     demozone = data["items"][0]["id"]
@@ -506,6 +506,12 @@ def handleButton(button, screen, event):
                     cad.lcd.write("RPi NOT FOUND")
                     cad.lcd.set_cursor(0, 1)
                     cad.lcd.write("RIGHTBTN TO CONT")
+              else:
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write("ERROR: " + str(result.status_code))
+                cad.lcd.set_cursor(0, 1)
+                cad.lcd.write("RIGHTBTN TO RTRY")
             elif SETUPSTEP == 2:
               # Setting all files based on retrieved data
               SETUPSTEP = SETUPSTEP + 1
