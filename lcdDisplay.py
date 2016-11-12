@@ -442,6 +442,7 @@ def handleButton(button, screen, event):
         else:
             # SETUP mode
             if SETUPSTEP == -1:
+              SETUPSTEP = SETUPSTEP + 1
               initDisplay(cad)
             elif SETUPSTEP == 0:
               SETUPSTEP = SETUPSTEP + 1
