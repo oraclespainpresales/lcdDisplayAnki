@@ -798,7 +798,7 @@ def setDronePortFile(_port):
     except IOError:
         f = open(drone_port_file, 'w')
     f.seek(0)
-    f.write(_port)
+    f.write(str(_port))
     f.truncate()
     f.close()
 
