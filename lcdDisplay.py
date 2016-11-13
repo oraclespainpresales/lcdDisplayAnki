@@ -835,7 +835,7 @@ if not SETUP:
     maxInfoDisplay = 1
     SETUPSTEP=0
 else:
-    demozone = get_demozone_file()
+    demozone = get_demozone()
     proxyport = getDronePortFile()
 
 initDisplay(cad)
