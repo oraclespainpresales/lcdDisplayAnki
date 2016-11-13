@@ -794,7 +794,7 @@ def setDemozoneFile(_demozone):
 
 def setDronePortFile(_port):
     try:
-        f = open(drone_port_file, 'r')
+        f = open(drone_port_file, 'r+')
     except IOError:
         f = open(drone_port_file, 'w')
     f.seek(0)
