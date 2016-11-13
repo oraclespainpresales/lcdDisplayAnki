@@ -38,6 +38,7 @@ BUTTONRIGHT=7
 pi_img_version_file="/home/pi/setup/PiImgVersion.dat"
 pi_id_file="/home/pi/setup/PiId.dat"
 demozone_file="/home/pi/setup/demozone.dat"
+drone_port_file="/home/pi/setup/drone_port.dat"
 redirects_file="/home/pi/setup/redirects"
 race_status_file="/home/pi/setup/race_status.dat"
 race_count_file="/home/pi/setup/race_count.dat"
@@ -57,9 +58,9 @@ CHECK_IOTPROXY_STATUS_CMD = "curl http://localhost:8888/iot/status 2> /dev/null 
 RESET_CURRENT_SPEED_DATA_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclecloud.com:8001/BAMHelper/ResetCurrentSpeedService/anki/reset/speed/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
 UPDATE_CURRENT_RACE_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclecloud.com:8001/BAMHelper/UpdateCurrentRaceService/anki/event/currentrace/{DEMOZONE}/{RACEID} 2>/dev/null | grep HTTP | awk '{print $2}'"
 RESET_RACE_DATA_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclecloud.com:8001/BAMHelper/ResetBAMDataService/anki/reset/bam/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
-CHECK_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep $DRONEPORT | wc -l\""
-CHECK_NODEUP_CMD = "wget -q -T 5 --tries 2 -O - http://$reverseProxy:$DRONEPORT/drone > /dev/null && echo OK || echo NOK"
-CHECK_WEBSOCKET_CMD = "wget -q -T 5 --tries 1 -O - http://$reverseProxy:$DRONEPORT/drone/ping > /dev/null && echo OK || echo NOK"
+CHECK_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {DRONEPORT} | wc -l\""
+CHECK_NODEUP_CMD = "wget -q -T 5 --tries 2 -O - http://$reverseProxy:{DRONEPORT}/drone > /dev/null && echo OK || echo NOK"
+CHECK_WEBSOCKET_CMD = "wget -q -T 5 --tries 1 -O - http://$reverseProxy:{DRONEPORT}/drone/ping > /dev/null && echo OK || echo NOK"
 RESET_AUTOSSH_CMD = "pkill autossh;/home/pi/bin/setupReverseSSHPorts.sh " + redirects_file
 RESET_NODEJS_CMD = "forever stop drone;forever start --uid drone --append /home/pi/node/dronecontrol/server.js"
 USB_PORTS_CMD = "ls -1 /dev/ttyU* 2>/dev/null | wc -l"
@@ -102,8 +103,8 @@ def get_dbcs():
 
 def get_demozone():
   global demozone_file
-  demozone = read_file(demozone_file)
-  return(demozone.rstrip())
+  d = read_file(demozone_file)
+  return(d.rstrip())
 
 def sync_bics():
   url = get_dbcs() + "/apex/pdb1/anki/iotcs/setup/" + get_demozone()
@@ -521,6 +522,7 @@ def handleButton(button, screen, event):
               SETUPSTEP = SETUPSTEP + 1
               setDemozoneFile(demozone)
               setRedirectsFile(proxyport)
+              setDronePortFile(proxyport)
               cad.lcd.clear()
               cad.lcd.set_cursor(0, 0)
               cad.lcd.write("SETUP COMPLETE")
@@ -727,17 +729,26 @@ def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
 
 def check_reverse_proxy():
-  listeners=int(run_cmd(CHECK_REVERSEPROXY_CMD))
+  global proxyport
+  URI = CHECK_REVERSEPROXY_CMD
+  URI = URI.replace("{DRONEPORT}", proxyport)
+  listeners=int(run_cmd(URI))
   if listeners > 0:
      return "OK"
   else:
      return "NOK"
 
 def check_nodejs():
-   return run_cmd(CHECK_NODEUP_CMD)
+   global proxyport
+   URI = CHECK_NODEUP_CMD
+   URI = URI.replace("{DRONEPORT}", proxyport)
+   return run_cmd(URI)
 
 def check_websocket():
-   return run_cmd(CHECK_WEBSOCKET_CMD)
+   global proxyport
+   URI = CHECK_WEBSOCKET_CMD
+   URI = URI.replace("{DRONEPORT}", proxyport)
+   return run_cmd(URI)
 
 def getPiName():
   with open(demozone_file, 'r') as f:
@@ -781,6 +792,25 @@ def setDemozoneFile(_demozone):
         f.close()
     os.rename(SETUP_demozone_file, demozone_file)
 
+def setDronePortFile(_port):
+    try:
+        f = open(drone_port_file, 'r')
+    except IOError:
+        f = open(drone_port_file, 'w')
+    f.seek(0)
+    f.write(_port)
+    f.truncate()
+    f.close()
+
+def getDronePortFile():
+  try:
+    with open(drone_port_file, 'r') as f:
+      first_line = f.readline()
+      return(first_line)
+  except (IOError):
+      print "%s file not found!!!" % drone_port_file
+      return "0"
+
 def setRedirectsFile(_proxyport):
     with open(SETUP_redirects_file, 'r+') as f:
         data = f.read()
@@ -804,6 +834,9 @@ SETUP = os.path.isfile(demozone_file)
 if not SETUP:
     maxInfoDisplay = 1
     SETUPSTEP=0
+else:
+    demozone = get_demozone_file()
+    proxyport = getDronePortFile()
 
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
