@@ -822,7 +822,7 @@ def setRedirectsFile(_proxyport):
     os.rename(SETUP_redirects_file, redirects_file)
 
 def setRaceCountToZero(fName):
-    with open(file, 'r+') as f:
+    with open(fName, 'r+') as f:
         f.seek(0)
         f.write("0")
         f.truncate()
