@@ -371,10 +371,10 @@ def handleButton(button, screen, event):
 	    shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
 	    os.remove(redirects_file)
 	    shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
-	    deleteContent(race_lap_Thermo_file)
-	    deleteContent(race_lap_GroundShock_file)
-	    deleteContent(race_lap_Skull_file)
-	    deleteContent(race_lap_Guardian_file)
+	    setRaceCountToZero(race_lap_Thermo_file)
+	    setRaceCountToZero(race_lap_GroundShock_file)
+	    setRaceCountToZero(race_lap_Skull_file)
+	    setRaceCountToZero(race_lap_Guardian_file)
 	    cad.lcd.clear()
 	    cad.lcd.set_cursor(0, 0)
 	    cad.lcd.write("RESET COMPLETE")
@@ -821,9 +821,12 @@ def setRedirectsFile(_proxyport):
         f.close()
     os.rename(SETUP_redirects_file, redirects_file)
 
-def deleteContent(fName):
-    with open(fName, "w"):
-        pass
+def setRaceCountToZero(fName):
+    with open(file, 'r+') as f:
+        f.seek(0)
+        f.write("0")
+        f.truncate()
+        f.close()
 
 cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
