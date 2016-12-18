@@ -17,13 +17,13 @@ SETUP_redirects_file="/home/pi/setup/redirects.TOSETUP"
 
 INIT=0
 WIFI=1
-SNIFFERS=2
-IOTPROXY=3
-REVERSEPORTS=4
-RACE=5
-#LAPS=5
+EVENT=2
+SNIFFERS=3
+IOTPROXY=4
+REVERSEPORTS=5
+RACE=6
 currentInfoDisplay=0
-maxInfoDisplay=5
+maxInfoDisplay=6
 buttonWaitingForConfirmation=-1
 
 BUTTON1=0
@@ -126,6 +126,20 @@ def sync_bics():
     print "Error retrieving IoTCS setup from DBCS: " + iotcs.status_code
     return iotcs.status_code
 
+def get_current_event():
+  currentdate = time.strftime("%m-%d-%Y")
+  url = get_dbcs() + "/apex/pdb1/anki/events/" + currentdate
+  currentevent = getRest("", url)
+  if currentevent.status_code == 200:
+    data = json.loads(currentevent.content)
+    if len(data["items"]) = 0
+      return 404
+    else:
+      return 200
+  else:
+    print "Error retrieving current registered event from DBCS: " + currentevent.status_code
+    return currentevent.status_code
+
 def reset_current_speed():
   URI = RESET_CURRENT_SPEED_DATA_CMD
   URI = URI.replace("{DEMOZONE}", demozone)
@@ -162,6 +176,8 @@ def displayInfoRotation(cad):
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
     wifiDisplay(cad)
+elif currentInfoDisplay == EVENT:
+    eventDisplay(cad)
   elif currentInfoDisplay == SNIFFERS:
     sniffersDisplay(cad)
   elif currentInfoDisplay == IOTPROXY:
@@ -193,6 +209,14 @@ def wifiDisplay(cad):
   cad.lcd.write(get_my_ip())
   cad.lcd.set_cursor(15, 1)
   cad.lcd.write(check_internet())
+
+def eventDisplay(cad):
+  today = time.strftime("%d-%b-%y")
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("Today: " + )
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write(get_current_event())
 
 def sniffersDisplay(cad):
   cad.lcd.clear()
