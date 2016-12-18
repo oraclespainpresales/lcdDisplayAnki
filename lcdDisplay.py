@@ -216,7 +216,7 @@ def eventDisplay(cad):
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Today: " + today)
   cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(get_current_event())
+  cad.lcd.write(str(get_current_event()))
 
 def sniffersDisplay(cad):
   cad.lcd.clear()
