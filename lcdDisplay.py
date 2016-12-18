@@ -10,6 +10,7 @@ import shutil
 
 SETUP=False
 SETUPSTEP=0
+EVENTSCHEDULED=False
 demozone=""
 proxyport=-1
 SETUP_demozone_file="/home/pi/setup/demozone.TOSETUP"
@@ -24,6 +25,7 @@ REVERSEPORTS=5
 RACE=6
 currentInfoDisplay=0
 maxInfoDisplay=6
+rightMaxInfoDisplay=maxInfoDisplay
 buttonWaitingForConfirmation=-1
 
 BUTTON1=0
@@ -127,15 +129,22 @@ def sync_bics():
     return iotcs.status_code
 
 def get_current_event():
+  global EVENTSCHEDULED
+  global maxInfoDisplay
+  global rightMaxInfoDisplay
+
+  EVENTSCHEDULED = False
+  maxInfoDisplay = 2
   currentdate = time.strftime("%m-%d-%Y")
   url = get_dbcs() + "/apex/pdb1/anki/events/" + get_demozone() + "/" + currentdate
-  print url
   currentevent = getRest("", url)
   if currentevent.status_code == 200:
     data = json.loads(currentevent.content)
     if len(data["items"]) == 0:
       return 404
     else:
+      EVENTSCHEDULED = True
+      maxInfoDisplay = rightMaxInfoDisplay
       return 200
   else:
     print "Error retrieving current registered event from DBCS: " + str(currentevent.status_code)
@@ -217,7 +226,11 @@ def eventDisplay(cad):
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Today: " + today)
   cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(str(get_current_event()))
+  if get_current_event() == 200:
+      msg = "DEMO SCHEDULED"
+  else:
+      msg = "NODEMO SCHEDULED"
+  cad.lcd.write(msg)
 
 def sniffersDisplay(cad):
   cad.lcd.clear()
@@ -644,6 +657,13 @@ def handleButton(button, screen, event):
 def buttonPressed(event):
 #  print "Event: "+str(event.pin_num)
   global currentInfoDisplay
+  global EVENTSCHEDULED
+
+  if not EVENTSCHEDULED:
+      if currentInfoDisplay > EVENT
+      elif currentInfoDisplay
+
+
 
   if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
@@ -865,6 +885,7 @@ if not SETUP:
 else:
     demozone = get_demozone()
     proxyport = getDronePortFile()
+    get_current_event()
 
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
