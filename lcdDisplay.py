@@ -137,18 +137,22 @@ def get_current_event():
   maxInfoDisplay = 2
   currentdate = time.strftime("%m-%d-%Y")
   url = get_dbcs() + "/apex/pdb1/anki/events/" + get_demozone() + "/" + currentdate
-  currentevent = getRest("", url)
-  if currentevent.status_code == 200:
-    data = json.loads(currentevent.content)
-    if len(data["items"]) == 0:
-      return 404
+  try:
+    currentevent = getRest("", url)
+    if currentevent.status_code == 200:
+      data = json.loads(currentevent.content)
+      if len(data["items"]) == 0:
+        return 404
+      else:
+        EVENTSCHEDULED = True
+        maxInfoDisplay = rightMaxInfoDisplay
+        return 200
     else:
-      EVENTSCHEDULED = True
-      maxInfoDisplay = rightMaxInfoDisplay
-      return 200
-  else:
-    print "Error retrieving current registered event from DBCS: " + str(currentevent.status_code)
-    return currentevent.status_code
+      print "Error retrieving current registered event from DBCS: " + str(currentevent.status_code)
+      return currentevent.status_code
+  except:
+    print "Error retrieving event information"
+    return 500
 
 def reset_current_speed():
   URI = RESET_CURRENT_SPEED_DATA_CMD
