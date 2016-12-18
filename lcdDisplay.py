@@ -214,7 +214,7 @@ def eventDisplay(cad):
   today = time.strftime("%d-%b-%y")
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("Today: " + )
+  cad.lcd.write("Today: " + today)
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(get_current_event())
 
