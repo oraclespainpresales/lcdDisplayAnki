@@ -132,7 +132,7 @@ def get_current_event():
   currentevent = getRest("", url)
   if currentevent.status_code == 200:
     data = json.loads(currentevent.content)
-    if len(data["items"]) == 0
+    if len(data["items"]) == 0:
       return 404
     else:
       return 200
