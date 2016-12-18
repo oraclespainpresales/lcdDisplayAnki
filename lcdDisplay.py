@@ -137,7 +137,7 @@ def get_current_event():
     else:
       return 200
   else:
-    print "Error retrieving current registered event from DBCS: " + currentevent.status_code
+    print "Error retrieving current registered event from DBCS: " + str(currentevent.status_code)
     return currentevent.status_code
 
 def reset_current_speed():
