@@ -78,7 +78,7 @@ def getRest(message, url):
   #data_json = json.dumps(message)
   #headers = {'Content-type': 'application/json'}
   #response = requests.get(url, data=data_json, headers=headers)
-  response = requests.get(url, verify=False)
+  response = requests.get(url, verify=False, timeout=5)
   return response;
 
 def postRest(message, url):
@@ -86,7 +86,7 @@ def postRest(message, url):
   #headers = {'Content-type': 'application/json'}
   #response = requests.post(url, data=data_json, headers=headers)
   #print "Posting to "+url
-  response = requests.post(url, verify=False)
+  response = requests.post(url, verify=False, timeout=5)
   return response;
 
 def read_file(filename):
@@ -230,8 +230,11 @@ def eventDisplay(cad):
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Today: " + today)
   cad.lcd.set_cursor(0, 1)
-  if get_current_event() == 200:
+  e = get_current_event()
+  if e == 200:
       msg = "DEMO SCHEDULED"
+  elif e == 500:
+      msg = "ERROR.CHK NETWRK"
   else:
       msg = "NODEMO SCHEDULED"
   cad.lcd.write(msg)
