@@ -657,13 +657,6 @@ def handleButton(button, screen, event):
 def buttonPressed(event):
 #  print "Event: "+str(event.pin_num)
   global currentInfoDisplay
-  global EVENTSCHEDULED
-
-  if not EVENTSCHEDULED:
-      if currentInfoDisplay > EVENT
-      elif currentInfoDisplay
-
-
 
   if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
