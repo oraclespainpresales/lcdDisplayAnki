@@ -238,6 +238,7 @@ def eventDisplay(cad):
       msg = "ERROR.CHK NETWRK"
   else:
       msg = "NODEMO SCHEDULED"
+  cad.lcd.set_cursor(0, 1)
   cad.lcd.write(msg)
 
 def sniffersDisplay(cad):
@@ -302,9 +303,11 @@ def reversePortsDisplay(cad):
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Checking")
   cad.lcd.set_cursor(0, 1)
-  cad.lcd.write("Please, wait...")
+  cad.lcd.write("Please, wait.")
   prx_status=check_reverse_proxy()
+  cad.lcd.write(".")
   node_status=check_nodejs()
+  cad.lcd.write(".")
   websocket_status=check_websocket()
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
