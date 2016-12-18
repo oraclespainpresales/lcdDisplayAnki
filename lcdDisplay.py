@@ -129,6 +129,7 @@ def sync_bics():
 def get_current_event():
   currentdate = time.strftime("%m-%d-%Y")
   url = get_dbcs() + "/apex/pdb1/anki/events/" + currentdate
+  print url
   currentevent = getRest("", url)
   if currentevent.status_code == 200:
     data = json.loads(currentevent.content)
