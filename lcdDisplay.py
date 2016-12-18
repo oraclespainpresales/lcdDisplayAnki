@@ -176,7 +176,7 @@ def displayInfoRotation(cad):
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
     wifiDisplay(cad)
-elif currentInfoDisplay == EVENT:
+  elif currentInfoDisplay == EVENT:
     eventDisplay(cad)
   elif currentInfoDisplay == SNIFFERS:
     sniffersDisplay(cad)
