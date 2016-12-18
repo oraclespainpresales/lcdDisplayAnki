@@ -230,6 +230,7 @@ def eventDisplay(cad):
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Today: " + today)
   cad.lcd.set_cursor(0, 1)
+  cad.lcd.write("PLEASE WAIT...")
   e = get_current_event()
   if e == 200:
       msg = "DEMO SCHEDULED"
