@@ -627,7 +627,7 @@ def handleButton(button, screen, event):
 	  if buttonWaitingForConfirmation == BUTTON1:
 	    # RESTART AUTOSSH PROCESS
 	    cad.lcd.write("RESTARTING SSH\nTUNNELING")
-        subport = proxyport[-2:]
+        subport = str(proxyport)[-2:]
         _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
         print _KILL_REVERSEPROXY_CMD
 	    run_cmd(RESET_AUTOSSH_CMD)
