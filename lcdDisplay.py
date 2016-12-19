@@ -341,6 +341,11 @@ def start_race(event):
       time.sleep(5)
       displayInfoRotation(event.chip)
     else:
+      cad.lcd.clear()
+      cad.lcd.set_cursor(0, 0)
+      cad.lcd.write("Starting race")
+      cad.lcd.set_cursor(0, 1)
+      cad.lcd.write("Please, wait...")
       id=inc_race_count()
       resetLapFile(race_lap_Thermo_file)
       resetLapFile(race_lap_GroundShock_file)
