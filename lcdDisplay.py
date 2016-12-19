@@ -784,6 +784,7 @@ def check_reverse_proxy():
   global proxyport
   URI = CHECK_REVERSEPROXY_CMD
   URI = URI.replace("{DRONEPORT}", proxyport)
+  print URI
   listeners=int(run_cmd(URI))
   if listeners > 0:
      return "OK"
@@ -794,12 +795,14 @@ def check_nodejs():
    global proxyport
    URI = CHECK_NODEUP_CMD
    URI = URI.replace("{DRONEPORT}", proxyport)
+   print URI
    return run_cmd(URI)
 
 def check_websocket():
    global proxyport
    URI = CHECK_WEBSOCKET_CMD
    URI = URI.replace("{DRONEPORT}", proxyport)
+   print URI
    return run_cmd(URI)
 
 def getPiName():
