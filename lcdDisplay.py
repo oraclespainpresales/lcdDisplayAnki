@@ -61,6 +61,7 @@ RESET_CURRENT_SPEED_DATA_CMD = "curl -i -X POST http://oc-129-152-131-150.comput
 UPDATE_CURRENT_RACE_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclecloud.com:8001/BAMHelper/UpdateCurrentRaceService/anki/event/currentrace/{DEMOZONE}/{RACEID} 2>/dev/null | grep HTTP | awk '{print $2}'"
 RESET_RACE_DATA_CMD = "curl -i -X POST http://oc-129-152-131-150.compute.oraclecloud.com:8001/BAMHelper/ResetBAMDataService/anki/reset/bam/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
 CHECK_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {DRONEPORT} | wc -l\""
+KILL_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"/home/opc/killsshd.sh {PORT}\""
 CHECK_NODEUP_CMD = "wget -q -T 5 --tries 2 -O - http://$reverseProxy:{DRONEPORT}/drone > /dev/null && echo OK || echo NOK"
 CHECK_WEBSOCKET_CMD = "wget -q -T 5 --tries 1 -O - http://$reverseProxy:{DRONEPORT}/drone/ping > /dev/null && echo OK || echo NOK"
 RESET_AUTOSSH_CMD = "pkill autossh;/home/pi/bin/setupReverseSSHPorts.sh " + redirects_file
@@ -621,19 +622,21 @@ def handleButton(button, screen, event):
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
 	  # Confirmation to previous command
-	  if buttonWaitingForConfirmation == BUTTON1:
-	    # RESTART AUTOSSH PROCESS
-	    CMD = RESET_AUTOSSH_CMD
-	    msg = "RESTARTING SSH\nTUNNELING"
-	  else:
-	    # RESTART NODEJS
-	    CMD = RESET_NODEJS_CMD
-	    msg = "RESTARTING\nNODEJS"
-	  buttonWaitingForConfirmation = -1
 	  cad.lcd.clear()
 	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  run_cmd(CMD)
+	  if buttonWaitingForConfirmation == BUTTON1:
+	    # RESTART AUTOSSH PROCESS
+	    cad.lcd.write("RESTARTING SSH\nTUNNELING")
+        subport = proxyport[-2:]
+        _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
+        print _KILL_REVERSEPROXY_CMD
+	    run_cmd(RESET_AUTOSSH_CMD)
+	    run_cmd(_KILL_REVERSEPROXY_CMD)
+	  else:
+	    # RESTART NODEJS
+	    cad.lcd.write("RESTARTING\nNODEJS")
+	    run_cmd(RESET_NODEJS_CMD)
+	  buttonWaitingForConfirmation = -1
 	  displayInfoRotation(event.chip)
     if button == BUTTON1:
 	  buttonWaitingForConfirmation = button
