@@ -871,7 +871,8 @@ def getDronePortFile():
 def setRedirectsFile(_proxyport):
     with open(SETUP_redirects_file, 'r+') as f:
         data = f.read()
-        data = data.replace("[PORT]", str(_proxyport))
+        data = data.replace("[DRONEPORT]", str(_proxyport))
+        data = data.replace("[SSHPORT]", "22" + str(_proxyport)[-2:])
         f.seek(0)
         f.write(data)
         f.truncate()
