@@ -359,8 +359,8 @@ def hueSetupDisplay(cad):
       st = "ON"
   else:
       st = "OFF"
-  line1 = "HUE: " + st + " (" + status + ")"
-  line2 = "ON:%n OFF:%n RCH:%n" % (on,off,reachable)
+  line1 = "HUE: %s (%d)" % (st, status)
+  line2 = "ON:%d OFF:%d RCH:%d" % (on,off,reachable)
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write(line1)
