@@ -86,6 +86,7 @@ RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | g
 HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
 HUE_ON_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/ON/GREEN >/dev/null 2>&1"
 HUE_OFF_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/OFF >/dev/null 2>&1"
+HUE_LOCALON_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/ON/BLUE >/dev/null 2>&1"
 HUE_LOCALOFF_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/OFF >/dev/null 2>&1"
 piusergroup=1000
 
@@ -1026,6 +1027,7 @@ cad.lcd.cursor_off()
 HUEENABLED = os.path.isfile(hue_file)
 
 if HUEENABLED:
+    run_cmd(HUE_LOCALON_CMD)
     run_cmd(HUE_LOCALOFF_CMD)
 
 SETUP = os.path.isfile(demozone_file)
