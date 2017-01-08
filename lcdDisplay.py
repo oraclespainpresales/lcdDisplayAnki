@@ -8,13 +8,16 @@ import pprint
 import os
 import shutil
 
+pi_home="/home/pi"
+setup_home="/setup"
+
 SETUP=False
 SETUPSTEP=0
 EVENTSCHEDULED=False
 demozone=""
 proxyport=-1
-SETUP_demozone_file="/home/pi/setup/demozone.TOSETUP"
-SETUP_redirects_file="/home/pi/setup/redirects.TOSETUP"
+SETUP_demozone_file=pi_home+setup_home+"/demozone.TOSETUP"
+SETUP_redirects_file=pi_home+setup_home+"/redirects.TOSETUP"
 
 INIT=0
 WIFI=1
@@ -22,11 +25,13 @@ EVENT=2
 SNIFFERS=3
 IOTPROXY=4
 REVERSEPORTS=5
-RACE=6
+HUESETUP=6
+RACE=7
 currentInfoDisplay=0
-maxInfoDisplay=6
+maxInfoDisplay=7
 rightMaxInfoDisplay=maxInfoDisplay
 buttonWaitingForConfirmation=-1
+HUEENABLED=False
 
 BUTTON1=0
 BUTTON2=1
@@ -37,19 +42,20 @@ BUTTONMIDDLE=5
 BUTTONLEFT=6
 BUTTONRIGHT=7
 
-pi_img_version_file="/home/pi/setup/PiImgVersion.dat"
-pi_id_file="/home/pi/setup/PiId.dat"
-demozone_file="/home/pi/setup/demozone.dat"
-drone_port_file="/home/pi/setup/drone_port.dat"
-redirects_file="/home/pi/setup/redirects"
-race_status_file="/home/pi/setup/race_status.dat"
-race_count_file="/home/pi/setup/race_count.dat"
-race_lap_Thermo_file="/home/pi/setup/race_lap_Thermo.dat"
-race_lap_GroundShock_file="/home/pi/setup/race_lap_Ground Shock.dat"
-race_lap_Skull_file="/home/pi/setup/race_lap_Skull.dat"
-race_lap_Guardian_file="/home/pi/setup/race_lap_Guardian.dat"
-race_lap_file="/home/pi/setup/race_lap_%s.dat"
-dbcs_host_file="/home/pi/setup/dbcs.dat"
+pi_img_version_file=pi_home+setup_home+"/PiImgVersion.dat"
+pi_id_file=pi_home+setup_home+"/PiId.dat"
+demozone_file=pi_home+setup_home+"/demozone.dat"
+drone_port_file=pi_home+setup_home+"/drone_port.dat"
+redirects_file=pi_home+setup_home+"/redirects"
+race_status_file=pi_home+setup_home+"/race_status.dat"
+race_count_file=pi_home+setup_home+"/race_count.dat"
+race_lap_Thermo_file=pi_home+setup_home+"/race_lap_Thermo.dat"
+race_lap_GroundShock_file=pi_home+setup_home+"/race_lap_Ground Shock.dat"
+race_lap_Skull_file=pi_home+setup_home+"/race_lap_Skull.dat"
+race_lap_Guardian_file=pi_home+setup_home+"/race_lap_Guardian.dat"
+race_lap_file=pi_home+setup_home+"/race_lap_%s.dat"
+dbcs_host_file=pi_home+setup_home+"/dbcs.dat"
+hue_file=pi_home+setup_home+"/hue.dat"
 
 GET_IP_CMD = "hostname --all-ip-addresses"
 GET_WIFI_CMD = "sudo iwconfig wlan0 | grep ESSID | awk -F\":\" '{print $2}' | awk -F'\"' '{print $2}'"
@@ -199,6 +205,8 @@ def displayInfoRotation(cad):
     iotproxyDisplay(cad)
   elif currentInfoDisplay == REVERSEPORTS:
     reversePortsDisplay(cad)
+  elif currentInfoDisplay == HUESETUP:
+    hueSetupDisplay(cad)
   elif currentInfoDisplay == RACE:
     raceDisplay(cad)
   else:
@@ -680,6 +688,8 @@ def buttonPressed(event):
   if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
       currentInfoDisplay=currentInfoDisplay-1
+      if currentInfoDisplay == HUESETUP and not HUEENABLED:
+          currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
     displayInfoRotation(event.chip)
@@ -687,6 +697,8 @@ def buttonPressed(event):
   elif event.pin_num == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
+      if currentInfoDisplay == HUESETUP and not HUEENABLED:
+          currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
     displayInfoRotation(event.chip)
@@ -890,6 +902,8 @@ cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
+
+HUEENABLED = os.path.isfile(hue_file)
 
 SETUP = os.path.isfile(demozone_file)
 if not SETUP:
