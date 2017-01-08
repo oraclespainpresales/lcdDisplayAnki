@@ -80,6 +80,7 @@ KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 # HUE stuff
+CHECK_REVERSEPROXY_HUE_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {HUEPORT} | wc -l\""
 HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
 HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
 RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
@@ -363,7 +364,8 @@ def hueSetupDisplay(cad):
       st = "ON"
   else:
       st = "OFF"
-  line1 = "HUE: %s (%d)" % (st, status)
+  proxystatus = check_reverse_proxy_hue()
+  line1 = "SSH:%s HUE:%s" % (proxystatus, st)
   line2 = "ON:%d OFF:%d RCH:%d" % (on,off,reachable)
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
@@ -917,6 +919,17 @@ def get_hue_status():
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
+
+def check_reverse_proxy_hue():
+  global proxyport
+  URI = CHECK_REVERSEPROXY_HUE_CMD
+  port = "33" + str(proxyport)[-2:]
+  URI = URI.replace("{HUEPORT}", port)
+  listeners=int(run_cmd(URI))
+  if listeners > 0:
+     return "OK"
+  else:
+     return "NOK"
 
 def check_reverse_proxy():
   global proxyport
