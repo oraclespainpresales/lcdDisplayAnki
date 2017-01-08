@@ -80,8 +80,8 @@ KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 # HUE stuff
-HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status"
-HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping"
+HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
+HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
 RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
 HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
 piusergroup=1000
