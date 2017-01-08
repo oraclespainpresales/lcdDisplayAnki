@@ -79,6 +79,11 @@ POWEROFF_CMD = "sudo poweroff"
 KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
+# HUE stuff
+HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status"
+HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping"
+RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
+HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
 piusergroup=1000
 
 def getRest(message, url):
@@ -329,7 +334,38 @@ def reversePortsDisplay(cad):
 def hueSetupDisplay(cad):
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("HUE ENABLED")
+  cad.lcd.write("GETTING HUE DATA")
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write("PLEASE WAIT...")
+  response = get_hue_status()
+  responselines = response.splitlines()
+  status = responselines[0].split(" ")[1]
+  body = responselines[-1]
+  on=0
+  off=0
+  reachable=0
+  try:
+      jsonBody = json.loads(body)
+      for i, l in enumerate(jsonBody["lights"]):
+          if jsonBody["lights"][l]["state"]["on"]:
+              on = on + 1
+          else:
+              off = off + 1
+          if jsonBody["lights"][l]["state"]["reachable"]:
+              reachable = reachable + 1
+  except:
+      print "Not a valid JSON: %s" % body
+  if status == 200:
+      st = "ON"
+  else:
+      st = "OFF"
+  line1 = "HUE: " + st + " (" + status + ")"
+  line2 = "ON:%n OFF:%n RCH:%n" % (on,off,reachable)
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write(line1)
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write(line2)
 
 def resetLapFile(file):
   try:
@@ -798,6 +834,9 @@ def get_my_wifi():
 
 def get_my_ip():
   return run_cmd(GET_IP_CMD)[:-1]
+
+def get_hue_status():
+  return run_cmd(HUE_PING_CMD)
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
