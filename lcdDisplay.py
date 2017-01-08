@@ -326,6 +326,11 @@ def reversePortsDisplay(cad):
   cad.lcd.set_cursor(9, 1)
   cad.lcd.write(" WS:" + websocket_status)
 
+def hueSetupDisplay(cad):
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("HUE ENABLED")
+
 def resetLapFile(file):
   try:
     with open(file, 'r+') as f:
