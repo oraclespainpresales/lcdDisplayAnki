@@ -339,7 +339,7 @@ def hueSetupDisplay(cad):
   cad.lcd.write("PLEASE WAIT...")
   response = get_hue_status()
   responselines = response.splitlines()
-  status = responselines[0].split(" ")[1]
+  status = int(responselines[0].split(" ")[1])
   body = responselines[-1]
   on=0
   off=0
@@ -359,7 +359,7 @@ def hueSetupDisplay(cad):
       st = "ON"
   else:
       st = "OFF"
-  line1 = "HUE: %s (%d)" % (st, int(status))
+  line1 = "HUE: %s (%d)" % (st, status)
   line2 = "ON:%d OFF:%d RCH:%d" % (on,off,reachable)
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
