@@ -1041,6 +1041,7 @@ HUEENABLED = os.path.isfile(hue_file)
 
 if HUEENABLED:
     run_cmd(HUE_LOCALON_CMD)
+    time.sleep(2)
     run_cmd(HUE_LOCALOFF_CMD)
 
 SETUP = os.path.isfile(demozone_file)
