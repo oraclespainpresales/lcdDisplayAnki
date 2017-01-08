@@ -740,7 +740,7 @@ def handleButton(button, screen, event):
 	    # RESTART NODEJS
 	    cad.lcd.write("RESTARTING\nNODEJS")
 	    run_cmd(HARDRESET_HUE_CMD)
-	    time.sleep(5)
+	    time.sleep(10)
 	  else:
 	    # TEST LIGHTS
 	    cad.lcd.write("TESTING LIGHTS\nON & OFF")
