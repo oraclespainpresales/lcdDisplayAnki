@@ -95,8 +95,13 @@ def getRest(message, url):
   #data_json = json.dumps(message)
   #headers = {'Content-type': 'application/json'}
   #response = requests.get(url, data=data_json, headers=headers)
-  response = requests.get(url, verify=False, timeout=5)
-  return response;
+  try:
+    response = requests.get(url, verify=False, timeout=5)
+    return response;
+  except requests.exceptions.Timeout:
+    dummy = requests.Response()
+    dummy.status_code=408
+    return dummy;
 
 def postRest(message, url):
   #data_json = json.dumps(message)
@@ -137,10 +142,14 @@ def sync_bics():
     applicationid = data["items"][0]["applicationid"]
     integrationid = data["items"][0]["integrationid"]
     url = "https://" + hostname + ":" + str(port) + "/iot/api/v2/apps/" + applicationid + "/integrations/" + integrationid + "/sync/now"
-    resp = requests.post(url, auth=(username, password))
-    if resp.status_code != 202:
-        print "Error synchronizing BICS: " + resp.status_code
-    return resp.status_code
+    try:
+        resp = requests.post(url, auth=(username, password))
+        if resp.status_code != 202:
+            print "Error synchronizing BICS: " + resp.status_code
+        return resp.status_code
+    except requests.exceptions.Timeout:
+        print "Error synchronizing BICS: timeout"
+        return 408
   else:
     print "Error retrieving IoTCS setup from DBCS: " + iotcs.status_code
     return iotcs.status_code
