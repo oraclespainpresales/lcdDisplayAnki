@@ -145,13 +145,13 @@ def sync_bics():
     try:
         resp = requests.post(url, auth=(username, password))
         if resp.status_code != 202:
-            print "Error synchronizing BICS: " + resp.status_code
+            print "Error synchronizing BICS: " + str(resp.status_code)
         return resp.status_code
     except requests.exceptions.Timeout:
         print "Error synchronizing BICS: timeout"
         return 408
   else:
-    print "Error retrieving IoTCS setup from DBCS: " + iotcs.status_code
+    print "Error retrieving IoTCS setup from DBCS: " + str(iotcs.status_code)
     return iotcs.status_code
 
 def get_current_event():
