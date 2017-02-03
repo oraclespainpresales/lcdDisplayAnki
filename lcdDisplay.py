@@ -1120,9 +1120,6 @@ else:
     proxyport = getDronePortFile()
     get_current_event()
 
-result = get_device_conf(demozone)
-print result
-
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
