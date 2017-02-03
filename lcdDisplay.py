@@ -147,7 +147,8 @@ def get_device_conf(_demozone):
         with open("/home/pi/node/iotcswrapper/" + devicefilename,'w+') as f:
             f.write(devicedata)
         CMD = CREATE_DEVICE_LINK.replace("{DEVICEFILE}", devicefilename)
-        return run_cmd(CMD)
+        run_cmd(CMD)
+        return 0
   else:
     return -2
 
