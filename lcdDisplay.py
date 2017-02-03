@@ -520,8 +520,8 @@ def handleButton(button, screen, event):
 	    setRaceCountToZero(race_lap_Skull_file)
 	    setRaceCountToZero(race_lap_Guardian_file)
         # Remove any device file
-        devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
-        for file in devicefiles:
+	    devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
+	    for file in devicefiles:
             os.remove(file)
 	    cad.lcd.clear()
 	    cad.lcd.set_cursor(0, 0)
