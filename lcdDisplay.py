@@ -6,6 +6,7 @@ import requests
 import json
 import pprint
 import os
+import glob
 import shutil
 
 pi_home="/home/pi"
@@ -79,6 +80,7 @@ POWEROFF_CMD = "sudo poweroff"
 KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
+CREATE_DEVICE_LINK = "ln -s /home/pi/node/iotcswrapper/{DEVICEFILE} /home/pi/node/iotcswrapper/current-device.conf"
 # HUE stuff
 CHECK_REVERSEPROXY_HUE_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {HUEPORT} | wc -l\""
 HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
@@ -129,6 +131,25 @@ def get_demozone():
   global demozone_file
   d = read_file(demozone_file)
   return(d.rstrip())
+
+def get_device_conf(_demozone):
+  url = get_dbcs() + "/apex/pdb1/anki/device/" + _demozone
+  device = getRest("", url)
+  if device.status_code == 200:
+    data = json.loads(device.content)
+    if len(data["items"]) == 0:
+        # Demozone's device is not present in the table
+        return -1
+    else:
+        deviceid = data["items"][0]["deviceid"]
+        devicedata = data["items"][0]["data"]
+        devicefilename = _demozone + "_" + deviceid + ".conf"
+        with open("/home/pi/node/iotcswrapper/" + devicefilename,'w+') as f:
+            f.write(devicedata)
+        CMD = CREATE_DEVICE_LINK.replace("{DEVICEFILE}", devicefilename)
+        return run_cmd(CMD)
+  else:
+    return -2
 
 def sync_bics():
   url = get_dbcs() + "/apex/pdb1/anki/iotcs/setup/" + get_demozone()
@@ -498,6 +519,10 @@ def handleButton(button, screen, event):
 	    setRaceCountToZero(race_lap_GroundShock_file)
 	    setRaceCountToZero(race_lap_Skull_file)
 	    setRaceCountToZero(race_lap_Guardian_file)
+        # Remove any device file
+        devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
+        for file in devicefiles:
+            os.remove(file)
 	    cad.lcd.clear()
 	    cad.lcd.set_cursor(0, 0)
 	    cad.lcd.write("RESET COMPLETE")
@@ -641,6 +666,34 @@ def handleButton(button, screen, event):
                 cad.lcd.set_cursor(0, 1)
                 cad.lcd.write("RIGHTBTN TO RTRY")
             elif SETUPSTEP == 2:
+              # Retrieving device data from DB
+              cad.lcd.clear()
+              cad.lcd.set_cursor(0, 0)
+              cad.lcd.write("GETTING DEVICE")
+              cad.lcd.set_cursor(0, 1)
+              cad.lcd.write("FOR DEMOZONE...")
+              result = get_device_conf(demozone)
+              # -1: does not exist. -2: error. Other: OK
+              if result == -1:
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("DEVICE NOT FOUND")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("RIGHTBTN TO RTRY")
+              elif result == -2:
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("ERROR GETTING DV")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("RIGHTBTN TO RTRY")
+              else:
+                  SETUPSTEP = SETUPSTEP + 1
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("DEVICE SET OK")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("RIGHTBTN TO CONT")
+            elif SETUPSTEP == 3:
               # Setting all files based on retrieved data
               SETUPSTEP = SETUPSTEP + 1
               setDemozoneFile(demozone)
@@ -651,7 +704,7 @@ def handleButton(button, screen, event):
               cad.lcd.write("SETUP COMPLETE")
               cad.lcd.set_cursor(0, 1)
               cad.lcd.write("PLEASE REBOOT")
-            elif SETUPSTEP == 3:
+            elif SETUPSTEP == 4:
               cad.lcd.clear()
               cad.lcd.set_cursor(0, 0)
               cad.lcd.write("SETUP COMPLETE")
