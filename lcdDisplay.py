@@ -522,7 +522,7 @@ def handleButton(button, screen, event):
         # Remove any device file
 	    devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
 	    for file in devicefiles:
-            os.remove(file)
+                os.remove(file)
 	    cad.lcd.clear()
 	    cad.lcd.set_cursor(0, 0)
 	    cad.lcd.write("RESET COMPLETE")
