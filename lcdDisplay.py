@@ -26,13 +26,11 @@ EVENT=2
 SNIFFERS=3
 IOTPROXY=4
 REVERSEPORTS=5
-HUESETUP=6
-RACE=7
+RACE=6
 currentInfoDisplay=0
-maxInfoDisplay=7
+maxInfoDisplay=6
 rightMaxInfoDisplay=maxInfoDisplay
 buttonWaitingForConfirmation=-1
-HUEENABLED=False
 
 BUTTON1=0
 BUTTON2=1
@@ -56,7 +54,6 @@ race_lap_Skull_file=pi_home+setup_home+"/race_lap_Skull.dat"
 race_lap_Guardian_file=pi_home+setup_home+"/race_lap_Guardian.dat"
 race_lap_file=pi_home+setup_home+"/race_lap_%s.dat"
 dbcs_host_file=pi_home+setup_home+"/dbcs.dat"
-hue_file=pi_home+setup_home+"/hue.dat"
 
 GET_IP_CMD = "hostname --all-ip-addresses"
 GET_WIFI_CMD = "sudo iwconfig wlan0 | grep ESSID | awk -F\":\" '{print $2}' | awk -F'\"' '{print $2}'"
@@ -81,16 +78,6 @@ KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
 RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
 CREATE_DEVICE_LINK = "ln -s /home/pi/node/iotcswrapper/{DEVICEFILE} /home/pi/node/iotcswrapper/current-device.conf"
-# HUE stuff
-CHECK_REVERSEPROXY_HUE_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {HUEPORT} | wc -l\""
-HUE_STATUS_CMD = "curl -i -X GET http://localhost:3378/hue/status 2>/dev/null"
-HUE_PING_CMD = "curl -i -X GET http://localhost:3378/hue/ping 2>/dev/null"
-RESET_HUE_CMD = "curl -i -X POST http://localhost:3378/hue/reset 2>/dev/null | grep HTTP | awk '{print $2}'"
-HARDRESET_HUE_CMD = "forever stop hue;forever start --uid hue --append /home/pi/node/huebridge/server.js -vh $HUEBRIDGE -t 5000"
-HUE_ON_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/ON/GREEN >/dev/null 2>&1"
-HUE_OFF_CMD = "curl -i -X PUT http://$reverseProxy:{PORT}/hue/ALL/OFF >/dev/null 2>&1"
-HUE_LOCALON_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/ON/BLUE >/dev/null 2>&1"
-HUE_LOCALOFF_CMD = "curl -i -X PUT http://localhost:3378/hue/ALL/OFF >/dev/null 2>&1"
 piusergroup=1000
 
 def getRest(message, url):
@@ -246,8 +233,6 @@ def displayInfoRotation(cad):
     iotproxyDisplay(cad)
   elif currentInfoDisplay == REVERSEPORTS:
     reversePortsDisplay(cad)
-  elif currentInfoDisplay == HUESETUP:
-    hueSetupDisplay(cad)
   elif currentInfoDisplay == RACE:
     raceDisplay(cad)
   else:
@@ -366,43 +351,6 @@ def reversePortsDisplay(cad):
   cad.lcd.write("NODE:"+node_status )
   cad.lcd.set_cursor(9, 1)
   cad.lcd.write(" WS:" + websocket_status)
-
-def hueSetupDisplay(cad):
-  cad.lcd.clear()
-  cad.lcd.set_cursor(0, 0)
-  cad.lcd.write("GETTING HUE DATA")
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write("PLEASE WAIT...")
-  response = get_hue_status()
-  responselines = response.splitlines()
-  status = int(responselines[0].split(" ")[1])
-  body = responselines[-1]
-  on=0
-  off=0
-  reachable=0
-  try:
-      jsonBody = json.loads(body)
-      for i, l in enumerate(jsonBody["lights"]):
-          if jsonBody["lights"][l]["state"]["on"]:
-              on = on + 1
-          else:
-              off = off + 1
-          if jsonBody["lights"][l]["state"]["reachable"]:
-              reachable = reachable + 1
-  except:
-      print "Not a valid JSON: %s" % body
-  if status == 200:
-      st = "ON"
-  else:
-      st = "OFF"
-  proxystatus = check_reverse_proxy_hue()
-  line1 = "SSH:%s HUE:%s" % (proxystatus, st)
-  line2 = "ON:%d OFF:%d RCH:%d" % (on,off,reachable)
-  cad.lcd.clear()
-  cad.lcd.set_cursor(0, 0)
-  cad.lcd.write(line1)
-  cad.lcd.set_cursor(0, 1)
-  cad.lcd.write(line2)
 
 def resetLapFile(file):
   try:
@@ -785,79 +733,6 @@ def handleButton(button, screen, event):
 	  if buttonWaitingForConfirmation != -1:
 	    displayInfoRotation(event.chip)
 	    buttonWaitingForConfirmation = -1
-  elif screen == HUESETUP:
-    # 1: RESTART AUTOSSH PROCESS
-    # 2: RESTART HUE
-    # 3: RESTART NODEJS
-    # 4: TEST LIGHTS (ON and then OFF)
-    # 5: CONFIRM for #1 and #2
-    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-	  # Confirmation to previous command
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  if buttonWaitingForConfirmation == BUTTON1:
-	    # RESTART AUTOSSH PROCESS
-	    cad.lcd.write("RESTARTING SSH\nTUNNELING")
-	    subport = str(proxyport)[-2:]
-	    _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
-	    print _KILL_REVERSEPROXY_CMD
-	    run_cmd(RESET_AUTOSSH_CMD)
-	    run_cmd(_KILL_REVERSEPROXY_CMD)
-	  elif buttonWaitingForConfirmation == BUTTON2:
-	    # RESTART HUE
-	    cad.lcd.write("RESETING HUE\nCONNECTION")
-	    run_cmd(RESET_HUE_CMD)
-	  elif buttonWaitingForConfirmation == BUTTON3:
-	    # RESTART NODEJS
-	    cad.lcd.write("RESTARTING\nNODEJS")
-	    run_cmd(HARDRESET_HUE_CMD)
-	    time.sleep(10)
-	  else:
-	    # TEST LIGHTS
-	    cad.lcd.write("TESTING LIGHTS\nON & OFF")
-	    port = "33" + str(proxyport)[-2:]
-	    _HUE_ON_CMD = HUE_ON_CMD.replace("{PORT}", port)
-	    _HUE_OFF_CMD = HUE_OFF_CMD.replace("{PORT}", port)
-	    run_cmd(_HUE_ON_CMD)
-	    run_cmd(_HUE_OFF_CMD)
-	  buttonWaitingForConfirmation = -1
-	  displayInfoRotation(event.chip)
-    if button == BUTTON1:
-	  buttonWaitingForConfirmation = button
-	  msg = "AUTOSSH RST REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON2:
-	  buttonWaitingForConfirmation = button
-	  msg = "HUE RESET REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON3:
-	  buttonWaitingForConfirmation = button
-	  msg = "NODEJS RESET REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON4:
-	  buttonWaitingForConfirmation = button
-	  msg = "HUE LIGHTS TEST"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
-    else:
-	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
-	    buttonWaitingForConfirmation = -1
   elif screen == RACE:
     # 1: START RACE
     # 2: STOP RACE
@@ -875,8 +750,6 @@ def buttonPressed(event):
   if event.pin_num == BUTTONLEFT:
     if currentInfoDisplay > 0:
       currentInfoDisplay=currentInfoDisplay-1
-      if currentInfoDisplay == HUESETUP and not HUEENABLED:
-          currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
     displayInfoRotation(event.chip)
@@ -884,8 +757,6 @@ def buttonPressed(event):
   elif event.pin_num == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
-      if currentInfoDisplay == HUESETUP and not HUEENABLED:
-          currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
     displayInfoRotation(event.chip)
@@ -981,22 +852,8 @@ def get_my_wifi():
 def get_my_ip():
   return run_cmd(GET_IP_CMD)[:-1]
 
-def get_hue_status():
-  return run_cmd(HUE_PING_CMD)
-
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
-
-def check_reverse_proxy_hue():
-  global proxyport
-  URI = CHECK_REVERSEPROXY_HUE_CMD
-  port = "33" + str(proxyport)[-2:]
-  URI = URI.replace("{HUEPORT}", port)
-  listeners=int(run_cmd(URI))
-  if listeners > 0:
-     return "OK"
-  else:
-     return "NOK"
 
 def check_reverse_proxy():
   global proxyport
@@ -1103,13 +960,6 @@ cad = pifacecad.PiFaceCAD()
 cad.lcd.backlight_on()
 cad.lcd.blink_off()
 cad.lcd.cursor_off()
-
-HUEENABLED = os.path.isfile(hue_file)
-
-if HUEENABLED:
-    run_cmd(HUE_LOCALON_CMD)
-    time.sleep(2)
-    run_cmd(HUE_LOCALOFF_CMD)
 
 SETUP = os.path.isfile(demozone_file)
 if not SETUP:
