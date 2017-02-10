@@ -420,7 +420,7 @@ def stop_race(event):
       cad.lcd.write("ID: %s" % id)
       time.sleep(3)
 
-      jsonData = [{"payload":{"data":{"data_demozone": demozone.lower(),"raceId":id,"raceStatus":"STOPPED"}}}]
+      jsonData = [{"payload":{"data":{"data_demozone": demozone.lower(),"raceId":int(id),"raceStatus":"STOPPED"}}}]
       postRest(jsonData, "%s%s" % (eventserver,EVENTURI) )
 
       cad.lcd.clear()
