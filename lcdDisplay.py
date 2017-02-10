@@ -55,6 +55,9 @@ race_lap_Guardian_file=pi_home+setup_home+"/race_lap_Guardian.dat"
 race_lap_file=pi_home+setup_home+"/race_lap_%s.dat"
 dbcs_host_file=pi_home+setup_home+"/dbcs.dat"
 
+eventserver = "http://129.152.131.103:10001"
+EVENTURI = "/event/race"
+
 GET_IP_CMD = "hostname --all-ip-addresses"
 GET_WIFI_CMD = "sudo iwconfig wlan0 | grep ESSID | awk -F\":\" '{print $2}' | awk -F'\"' '{print $2}'"
 RESET_WIFI_CMD = "sudo ifdown wlan0;sleep 5;sudo ifup wlan0"
@@ -93,11 +96,9 @@ def getRest(message, url):
     return dummy;
 
 def postRest(message, url):
-  #data_json = json.dumps(message)
-  #headers = {'Content-type': 'application/json'}
-  #response = requests.post(url, data=data_json, headers=headers)
-  #print "Posting to "+url
-  response = requests.post(url, verify=False, timeout=5)
+  data_json = json.dumps(message)
+  headers = {'Content-type': 'application/json'}
+  response = requests.post(url, data=data_json, headers=headers, verify=False, timeout=1)
   return response;
 
 def read_file(filename):
@@ -385,6 +386,10 @@ def start_race(event):
       resetLapFile(race_lap_GroundShock_file)
       resetLapFile(race_lap_Skull_file)
       resetLapFile(race_lap_Guardian_file)
+
+      jsonData = [{"payload":{"data":{"data_demozone": demozone.lower(),"raceId":id,"raceStatus":"RACING"}}}]
+      postRest(jsonData, "%s%s" % (eventserver,EVENTURI) )
+
       set_race_status("RACING")
       result = sync_race(id)
       cad.lcd.clear()
@@ -414,6 +419,10 @@ def stop_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("ID: %s" % id)
       time.sleep(3)
+
+      jsonData = [{"payload":{"data":{"data_demozone": demozone.lower(),"raceId":id,"raceStatus":"STOPPED"}}}]
+      postRest(jsonData, "%s%s" % (eventserver,EVENTURI) )
+
       cad.lcd.clear()
       cad.lcd.set_cursor(0, 0)
       cad.lcd.write("Sync BICS")
