@@ -98,8 +98,13 @@ def getRest(message, url):
 def postRest(message, url):
   data_json = json.dumps(message)
   headers = {'Content-type': 'application/json'}
-  response = requests.post(url, data=data_json, headers=headers, verify=False, timeout=1)
-  return response;
+  try:
+      response = requests.post(url, data=data_json, headers=headers, verify=False, timeout=1)
+      return response;
+  except:
+      dummy = requests.Response()
+      dummy.status_code = 500
+      return dummy;
 
 def read_file(filename):
   try:
@@ -418,11 +423,11 @@ def stop_race(event):
       cad.lcd.write("Race stopped!!")
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("ID: %s" % id)
-      time.sleep(3)
 
       jsonData = [{"payload":{"data":{"data_demozone": demozone.lower(),"raceId":int(id),"raceStatus":"STOPPED"}}}]
       postRest(jsonData, "%s%s" % (eventserver,EVENTURI) )
 
+      time.sleep(3)
       cad.lcd.clear()
       cad.lcd.set_cursor(0, 0)
       cad.lcd.write("Sync BICS")
