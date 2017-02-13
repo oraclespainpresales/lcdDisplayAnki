@@ -864,7 +864,7 @@ def get_my_wifi():
   return wifi
 
 def get_my_ip():
-  return run_cmd(GET_IP_CMD)[0]
+  return run_cmd(GET_IP_CMD).split(" ")[0]
 
 def check_internet():
   return run_cmd(CHECK_INTERNET_CMD)
