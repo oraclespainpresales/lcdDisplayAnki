@@ -79,7 +79,7 @@ REBOOT_CMD = "sudo reboot"
 POWEROFF_CMD = "sudo poweroff"
 KILL_SNIFFER_CMD = "/home/pi/ankiEventSniffer/killSniffer.sh"
 KILL_SNIFFERS_CMD = "/home/pi/ankiEventSniffer/killSniffers.sh"
-RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js /home/pi/node/iotcswrapper/AAAAAARXSIIA-AE.json"
+RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi/node/iotcswrapper/server.js -d /home/pi/node/iotcswrapper/current-device.conf"
 CREATE_DEVICE_LINK = "ln -s /home/pi/node/iotcswrapper/{DEVICEFILE} /home/pi/node/iotcswrapper/current-device.conf"
 piusergroup=1000
 
