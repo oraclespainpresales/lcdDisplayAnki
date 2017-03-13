@@ -195,23 +195,6 @@ def get_current_event():
     print "Error retrieving event information"
     return 500
 
-def reset_current_speed():
-  URI = RESET_CURRENT_SPEED_DATA_CMD
-  URI = URI.replace("{DEMOZONE}", demozone)
-  return run_cmd(URI)
-
-def reset_race_data():
-  URI = RESET_RACE_DATA_CMD
-  URI = URI.replace("{DEMOZONE}", demozone)
-  return run_cmd(URI)
-
-def sync_race(raceid):
-  URI = UPDATE_CURRENT_RACE_CMD
-  URI = URI.replace("{DEMOZONE}", demozone)
-  URI = URI.replace("{RACEID}", str(raceid))
-  print "%s" % URI
-  return run_cmd(URI)
-
 def get_lap(car):
   global race_lap_file
   filename = race_lap_file % car
@@ -397,12 +380,11 @@ def start_race(event):
       postRest(jsonData, "%s%s" % (eventserver,EVENTURI) )
 
       set_race_status("RACING")
-      result = sync_race(id)
       cad.lcd.clear()
       cad.lcd.set_cursor(0, 0)
       cad.lcd.write("Race started!!")
       cad.lcd.set_cursor(0, 1)
-      cad.lcd.write("ID: %s %s" % (id,str(result)))
+      cad.lcd.write("ID: %s" % id)
       time.sleep(5)
       displayInfoRotation(event.chip)
 
@@ -435,17 +417,11 @@ def stop_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("Please, wait...")
       result = sync_bics()
-      result_speed = reset_current_speed()
-      if result_speed == "":
-          result_speed = "408"
-      result_reset_data = reset_race_data()
-      if result_reset_data == "":
-          result_reset_data = "408"
       cad.lcd.clear()
       cad.lcd.set_cursor(0, 0)
       cad.lcd.write("Sync BICS")
       cad.lcd.set_cursor(0, 1)
-      cad.lcd.write("Result: %d %s" % (result,result_speed))
+      cad.lcd.write("Result: %d" % result)
       time.sleep(5)
       displayInfoRotation(event.chip)
 
