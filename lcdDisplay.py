@@ -209,6 +209,7 @@ def sync_race(raceid):
   URI = UPDATE_CURRENT_RACE_CMD
   URI = URI.replace("{DEMOZONE}", demozone)
   URI = URI.replace("{RACEID}", str(raceid))
+  print "%s" % URI
   return run_cmd(URI)
 
 def get_lap(car):
