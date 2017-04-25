@@ -432,312 +432,312 @@ def stop_race(event):
       displayInfoRotation(event.chip)
 
 def handleButton(button, screen, event):
-  global buttonWaitingForConfirmation
-  global SETUPSTEP
-  global dbcs
-  global demozone
-  global proxyport
+    global buttonWaitingForConfirmation
+    global SETUPSTEP
+    global dbcs
+    global demozone
+    global proxyport
 #  print "Button %s at screen %s" % (button,screen)
-  if screen == INIT and SETUP:
-    # 1: REBOOT
-    # 2: POWEROFF
-    # 3: RESET RPi
-    # 5: CONFIRM
-    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-	  # Confirmation to previous command
-        if buttonWaitingForConfirmation == BUTTON1:
-            # REBOOT
-            CMD = REBOOT_CMD
-            msg = "REBOOTING"
-        elif buttonWaitingForConfirmation == BUTTON2:
-    	    # POWEROFF
-    	    CMD = POWEROFF_CMD
-    	    msg = "HALTING SYSTEM"
-        else:
-            # RESET RPi
-            set_race_count(0)
-            os.remove(pi_id_file)
-            os.remove(demozone_file)
-            shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
-            os.remove(redirects_file)
-            shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
-            setRaceCountToZero(race_lap_Thermo_file)
-            setRaceCountToZero(race_lap_GroundShock_file)
-            setRaceCountToZero(race_lap_Skull_file)
-            setRaceCountToZero(race_lap_Guardian_file)
-            # Remove any device file
-            devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
-            for file in devicefiles:
-                os.remove(file)
+    if screen == INIT and SETUP:
+        # 1: REBOOT
+        # 2: POWEROFF
+        # 3: RESET RPi
+        # 5: CONFIRM
+        if buttonWaitingForConfirmation != -1 and button == BUTTON5:
+    	  # Confirmation to previous command
+            if buttonWaitingForConfirmation == BUTTON1:
+                # REBOOT
+                CMD = REBOOT_CMD
+                msg = "REBOOTING"
+            elif buttonWaitingForConfirmation == BUTTON2:
+        	    # POWEROFF
+        	    CMD = POWEROFF_CMD
+        	    msg = "HALTING SYSTEM"
+            else:
+                # RESET RPi
+                set_race_count(0)
+                os.remove(pi_id_file)
+                os.remove(demozone_file)
+                shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
+                os.remove(redirects_file)
+                shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
+                setRaceCountToZero(race_lap_Thermo_file)
+                setRaceCountToZero(race_lap_GroundShock_file)
+                setRaceCountToZero(race_lap_Skull_file)
+                setRaceCountToZero(race_lap_Guardian_file)
+                # Remove any device file
+                devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
+                for file in devicefiles:
+                    os.remove(file)
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write("RESET COMPLETE")
+                cad.lcd.set_cursor(0, 1)
+                cad.lcd.write("PLEASE REBOOT")
+                return
             cad.lcd.clear()
             cad.lcd.set_cursor(0, 0)
-            cad.lcd.write("RESET COMPLETE")
-            cad.lcd.set_cursor(0, 1)
-            cad.lcd.write("PLEASE REBOOT")
-            return
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        run_cmd(CMD)
-    if button == BUTTON1 or button == BUTTON2 or button == BUTTON3:
-        buttonWaitingForConfirmation = button
-        if button == BUTTON1:
-            msg = "REBOOT REQUEST"
-        elif button == BUTTON2:
-            msg = "POWEROFF REQUEST"
-        else:
-            msg = "RPi RESET RQUEST"
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("CONFIRM RIGHTBTN")
-    else:
-        if buttonWaitingForConfirmation != -1:
-            displayInfoRotation(event.chip)
-            buttonWaitingForConfirmation = -1
-  elif screen == WIFI and SETUP:
-    # 1: RESET WIFI
-    # 5: CONFIRM
-    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-        # Confirmation to previous command
-        buttonWaitingForConfirmation = -1
-        msg = "RESETING WIFI"
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        run_cmd(RESET_WIFI_CMD)
-        displayInfoRotation(event.chip)
-    if button == BUTTON1:
-        buttonWaitingForConfirmation = button
-        msg = "WIFI RST REQUEST"
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("CONFIRM RIGHTBTN")
-    else:
-        if buttonWaitingForConfirmation != -1:
-            displayInfoRotation(event.chip)
-            buttonWaitingForConfirmation = -1
-  elif not SETUP:
-    if button == BUTTON1 or button == BUTTON2:
-        if screen == INIT:
+            cad.lcd.write(msg)
+            run_cmd(CMD)
+        if button == BUTTON1 or button == BUTTON2 or button == BUTTON3:
             buttonWaitingForConfirmation = button
             if button == BUTTON1:
                 msg = "REBOOT REQUEST"
-            else:
+            elif button == BUTTON2:
                 msg = "POWEROFF REQUEST"
+            else:
+                msg = "RPi RESET RQUEST"
             cad.lcd.clear()
             cad.lcd.set_cursor(0, 0)
             cad.lcd.write(msg)
             cad.lcd.set_cursor(0, 1)
             cad.lcd.write("CONFIRM RIGHTBTN")
-        elif screen == WIFI:
-            if button == BUTTON1:
+        else:
+            if buttonWaitingForConfirmation != -1:
+                displayInfoRotation(event.chip)
+                buttonWaitingForConfirmation = -1
+    elif screen == WIFI and SETUP:
+        # 1: RESET WIFI
+        # 5: CONFIRM
+        if buttonWaitingForConfirmation != -1 and button == BUTTON5:
+            # Confirmation to previous command
+            buttonWaitingForConfirmation = -1
+            msg = "RESETING WIFI"
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write(msg)
+            run_cmd(RESET_WIFI_CMD)
+            displayInfoRotation(event.chip)
+        if button == BUTTON1:
+            buttonWaitingForConfirmation = button
+            msg = "WIFI RST REQUEST"
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write(msg)
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("CONFIRM RIGHTBTN")
+        else:
+            if buttonWaitingForConfirmation != -1:
+                displayInfoRotation(event.chip)
+                buttonWaitingForConfirmation = -1
+    elif not SETUP:
+        if button == BUTTON1 or button == BUTTON2:
+            if screen == INIT:
                 buttonWaitingForConfirmation = button
-                msg = "WIFI RST REQUEST"
+                if button == BUTTON1:
+                    msg = "REBOOT REQUEST"
+                else:
+                    msg = "POWEROFF REQUEST"
                 cad.lcd.clear()
                 cad.lcd.set_cursor(0, 0)
                 cad.lcd.write(msg)
                 cad.lcd.set_cursor(0, 1)
                 cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON5:
-        if buttonWaitingForConfirmation != -1:
-            if screen == INIT:
-                if buttonWaitingForConfirmation == BUTTON1:
-                    # REBOOT
-                    CMD = REBOOT_CMD
-                    msg = "REBOOTING"
-                else:
-                    # POWEROFF
-                    CMD = POWEROFF_CMD
-                    msg = "HALTING SYSTEM"
-                buttonWaitingForConfirmation = -1
-                cad.lcd.clear()
-                cad.lcd.set_cursor(0, 0)
-                cad.lcd.write(msg)
-                run_cmd(CMD)
             elif screen == WIFI:
-                buttonWaitingForConfirmation = -1
-                msg = "RESETING WIFI"
-                cad.lcd.clear()
-                cad.lcd.set_cursor(0, 0)
-                cad.lcd.write(msg)
-                run_cmd(RESET_WIFI_CMD)
-                displayInfoRotation(event.chip)
-        else:
-            # SETUP mode
-            if SETUPSTEP == -1:
-              SETUPSTEP = SETUPSTEP + 1
-              initDisplay(cad)
-            elif SETUPSTEP == 0:
-              SETUPSTEP = SETUPSTEP + 1
-              cad.lcd.clear()
-              cad.lcd.set_cursor(0, 0)
-              cad.lcd.write(getPiId())
-              cad.lcd.set_cursor(0, 1)
-              cad.lcd.write("RIGHTBTN TO CONT")
-            elif SETUPSTEP == 1:
-              # Retrieving RPi data from DB
-              cad.lcd.clear()
-              cad.lcd.set_cursor(0, 0)
-              cad.lcd.write("RETRIEVING DATA")
-              cad.lcd.set_cursor(0, 1)
-              cad.lcd.write("FOR THIS RPi...")
-              url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
-              result = getRest("", url)
-              if result.status_code == 200:
-                SETUPSTEP = SETUPSTEP + 1
-                data = json.loads(result.content)
-                if len(data["items"]) > 0:
-                    demozone = data["items"][0]["id"]
-                    proxyport = data["items"][0]["proxyport"]
+                if button == BUTTON1:
+                    buttonWaitingForConfirmation = button
+                    msg = "WIFI RST REQUEST"
                     cad.lcd.clear()
                     cad.lcd.set_cursor(0, 0)
-                    cad.lcd.write("ZONE:" + demozone)
+                    cad.lcd.write(msg)
                     cad.lcd.set_cursor(0, 1)
-                    cad.lcd.write("RIGHTBTN TO CONT")
-                else:
-                    SETUPSTEP = -1
+                    cad.lcd.write("CONFIRM RIGHTBTN")
+        elif button == BUTTON5:
+            if buttonWaitingForConfirmation != -1:
+                if screen == INIT:
+                    if buttonWaitingForConfirmation == BUTTON1:
+                        # REBOOT
+                        CMD = REBOOT_CMD
+                        msg = "REBOOTING"
+                    else:
+                        # POWEROFF
+                        CMD = POWEROFF_CMD
+                        msg = "HALTING SYSTEM"
+                    buttonWaitingForConfirmation = -1
                     cad.lcd.clear()
                     cad.lcd.set_cursor(0, 0)
-                    cad.lcd.write("RPi NOT FOUND")
-                    cad.lcd.set_cursor(0, 1)
-                    cad.lcd.write("RIGHTBTN TO CONT")
-              else:
-                cad.lcd.clear()
-                cad.lcd.set_cursor(0, 0)
-                cad.lcd.write("ERROR: " + str(result.status_code))
-                cad.lcd.set_cursor(0, 1)
-                cad.lcd.write("RIGHTBTN TO RTRY")
-            elif SETUPSTEP == 2:
-              # Retrieving device data from DB
-              cad.lcd.clear()
-              cad.lcd.set_cursor(0, 0)
-              cad.lcd.write("GETTING DEVICE")
-              cad.lcd.set_cursor(0, 1)
-              cad.lcd.write("FOR DEMOZONE...")
-              result = get_device_conf(demozone)
-              # -1: does not exist. -2: error. Other: OK
-              if result == -1:
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("DEVICE NOT FOUND")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("RIGHTBTN TO RTRY")
-              elif result == -2:
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("ERROR GETTING DV")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("RIGHTBTN TO RTRY")
-              else:
+                    cad.lcd.write(msg)
+                    run_cmd(CMD)
+                elif screen == WIFI:
+                    buttonWaitingForConfirmation = -1
+                    msg = "RESETING WIFI"
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write(msg)
+                    run_cmd(RESET_WIFI_CMD)
+                    displayInfoRotation(event.chip)
+            else:
+                # SETUP mode
+                if SETUPSTEP == -1:
+                  SETUPSTEP = SETUPSTEP + 1
+                  initDisplay(cad)
+                elif SETUPSTEP == 0:
                   SETUPSTEP = SETUPSTEP + 1
                   cad.lcd.clear()
                   cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("DEVICE SET OK")
+                  cad.lcd.write(getPiId())
                   cad.lcd.set_cursor(0, 1)
                   cad.lcd.write("RIGHTBTN TO CONT")
-            elif SETUPSTEP == 3:
-              # Setting all files based on retrieved data
-              SETUPSTEP = SETUPSTEP + 1
-              setDemozoneFile(demozone)
-              setRedirectsFile(proxyport)
-              setDronePortFile(proxyport)
-              cad.lcd.clear()
-              cad.lcd.set_cursor(0, 0)
-              cad.lcd.write("SETUP COMPLETE")
-              cad.lcd.set_cursor(0, 1)
-              cad.lcd.write("PLEASE REBOOT")
-            elif SETUPSTEP == 4:
-              cad.lcd.clear()
-              cad.lcd.set_cursor(0, 0)
-              cad.lcd.write("SETUP COMPLETE")
-              cad.lcd.set_cursor(0, 1)
-              cad.lcd.write("PLEASE REBOOT")
-  elif screen == SNIFFERS:
-    # 1: RESET SNIFFER FOR THERMO
-    # 2: RESET SNIFFER FOR GROUND SHOCK
-    # 3: RESET SNIFFER FOR SKULL
-    # 4: RESET SNIFFER FOR GUARDIAN
-    # 5: RESET ALL
-    if button >= BUTTON1 and button <= BUTTON4:
-        resetSniffer(event, button)
-	else:
-        resetSniffers(event)
-  elif screen == IOTPROXY:
-    # 1: RESTART
-    # 5: CONFIRM
-    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-        # Confirmation to previous command
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write("RESTARTING")
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("IOT PROXY...")
-        run_cmd(RESET_IOTPROXY_CMD)
-    if button == BUTTON1:
-        buttonWaitingForConfirmation = button
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write("RESTART REQUEST")
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("CONFIRM RIGHTBTN")
-    else:
-        if buttonWaitingForConfirmation != -1:
-            displayInfoRotation(event.chip)
-            buttonWaitingForConfirmation = -1
-  elif screen == REVERSEPORTS:
-    # 1: RESTART AUTOSSH PROCESS
-    # 2: RESTART NODEJS
-    # 5: CONFIRM
-    if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-        # Confirmation to previous command
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        if buttonWaitingForConfirmation == BUTTON1:
-            # RESTART AUTOSSH PROCESS
-            cad.lcd.write("RESTARTING SSH\nTUNNELING")
-            subport = str(proxyport)[-2:]
-            _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
-            print _KILL_REVERSEPROXY_CMD
-            run_cmd(RESET_AUTOSSH_CMD)
-            run_cmd(_KILL_REVERSEPROXY_CMD)
+                elif SETUPSTEP == 1:
+                  # Retrieving RPi data from DB
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("RETRIEVING DATA")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("FOR THIS RPi...")
+                  url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
+                  result = getRest("", url)
+                  if result.status_code == 200:
+                    SETUPSTEP = SETUPSTEP + 1
+                    data = json.loads(result.content)
+                    if len(data["items"]) > 0:
+                        demozone = data["items"][0]["id"]
+                        proxyport = data["items"][0]["proxyport"]
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("ZONE:" + demozone)
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO CONT")
+                    else:
+                        SETUPSTEP = -1
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("RPi NOT FOUND")
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO CONT")
+                  else:
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("ERROR: " + str(result.status_code))
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("RIGHTBTN TO RTRY")
+                elif SETUPSTEP == 2:
+                  # Retrieving device data from DB
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("GETTING DEVICE")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("FOR DEMOZONE...")
+                  result = get_device_conf(demozone)
+                  # -1: does not exist. -2: error. Other: OK
+                  if result == -1:
+                      cad.lcd.clear()
+                      cad.lcd.set_cursor(0, 0)
+                      cad.lcd.write("DEVICE NOT FOUND")
+                      cad.lcd.set_cursor(0, 1)
+                      cad.lcd.write("RIGHTBTN TO RTRY")
+                  elif result == -2:
+                      cad.lcd.clear()
+                      cad.lcd.set_cursor(0, 0)
+                      cad.lcd.write("ERROR GETTING DV")
+                      cad.lcd.set_cursor(0, 1)
+                      cad.lcd.write("RIGHTBTN TO RTRY")
+                  else:
+                      SETUPSTEP = SETUPSTEP + 1
+                      cad.lcd.clear()
+                      cad.lcd.set_cursor(0, 0)
+                      cad.lcd.write("DEVICE SET OK")
+                      cad.lcd.set_cursor(0, 1)
+                      cad.lcd.write("RIGHTBTN TO CONT")
+                elif SETUPSTEP == 3:
+                  # Setting all files based on retrieved data
+                  SETUPSTEP = SETUPSTEP + 1
+                  setDemozoneFile(demozone)
+                  setRedirectsFile(proxyport)
+                  setDronePortFile(proxyport)
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("SETUP COMPLETE")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("PLEASE REBOOT")
+                elif SETUPSTEP == 4:
+                  cad.lcd.clear()
+                  cad.lcd.set_cursor(0, 0)
+                  cad.lcd.write("SETUP COMPLETE")
+                  cad.lcd.set_cursor(0, 1)
+                  cad.lcd.write("PLEASE REBOOT")
+    elif screen == SNIFFERS:
+        # 1: RESET SNIFFER FOR THERMO
+        # 2: RESET SNIFFER FOR GROUND SHOCK
+        # 3: RESET SNIFFER FOR SKULL
+        # 4: RESET SNIFFER FOR GUARDIAN
+        # 5: RESET ALL
+        if button >= BUTTON1 and button <= BUTTON4:
+            resetSniffer(event, button)
+    	else:
+            resetSniffers(event)
+    elif screen == IOTPROXY:
+        # 1: RESTART
+        # 5: CONFIRM
+        if buttonWaitingForConfirmation != -1 and button == BUTTON5:
+            # Confirmation to previous command
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write("RESTARTING")
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("IOT PROXY...")
+            run_cmd(RESET_IOTPROXY_CMD)
+        if button == BUTTON1:
+            buttonWaitingForConfirmation = button
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write("RESTART REQUEST")
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("CONFIRM RIGHTBTN")
         else:
-            # RESTART NODEJS
-            cad.lcd.write("RESTARTING\nNODEJS")
-            run_cmd(RESET_NODEJS_CMD)
-        buttonWaitingForConfirmation = -1
-        displayInfoRotation(event.chip)
-    if button == BUTTON1:
-        buttonWaitingForConfirmation = button
-        msg = "AUTOSSH RST REQ"
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("CONFIRM RIGHTBTN")
-    elif button == BUTTON2:
-        buttonWaitingForConfirmation = button
-        msg = "NODEJS RESET REQ"
-        cad.lcd.clear()
-        cad.lcd.set_cursor(0, 0)
-        cad.lcd.write(msg)
-        cad.lcd.set_cursor(0, 1)
-        cad.lcd.write("CONFIRM RIGHTBTN")
-    else:
-        if buttonWaitingForConfirmation != -1:
-            displayInfoRotation(event.chip)
+            if buttonWaitingForConfirmation != -1:
+                displayInfoRotation(event.chip)
+                buttonWaitingForConfirmation = -1
+    elif screen == REVERSEPORTS:
+        # 1: RESTART AUTOSSH PROCESS
+        # 2: RESTART NODEJS
+        # 5: CONFIRM
+        if buttonWaitingForConfirmation != -1 and button == BUTTON5:
+            # Confirmation to previous command
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            if buttonWaitingForConfirmation == BUTTON1:
+                # RESTART AUTOSSH PROCESS
+                cad.lcd.write("RESTARTING SSH\nTUNNELING")
+                subport = str(proxyport)[-2:]
+                _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
+                print _KILL_REVERSEPROXY_CMD
+                run_cmd(RESET_AUTOSSH_CMD)
+                run_cmd(_KILL_REVERSEPROXY_CMD)
+            else:
+                # RESTART NODEJS
+                cad.lcd.write("RESTARTING\nNODEJS")
+                run_cmd(RESET_NODEJS_CMD)
             buttonWaitingForConfirmation = -1
-  elif screen == RACE:
-    # 1: START RACE
-    # 2: STOP RACE
-    if button == BUTTON1:
-        start_race(event)
-    elif button == BUTTON2:
-        stop_race(event)
-  else:
+            displayInfoRotation(event.chip)
+        if button == BUTTON1:
+            buttonWaitingForConfirmation = button
+            msg = "AUTOSSH RST REQ"
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write(msg)
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("CONFIRM RIGHTBTN")
+        elif button == BUTTON2:
+            buttonWaitingForConfirmation = button
+            msg = "NODEJS RESET REQ"
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write(msg)
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("CONFIRM RIGHTBTN")
+        else:
+            if buttonWaitingForConfirmation != -1:
+                displayInfoRotation(event.chip)
+                buttonWaitingForConfirmation = -1
+    elif screen == RACE:
+        # 1: START RACE
+        # 2: STOP RACE
+        if button == BUTTON1:
+            start_race(event)
+        elif button == BUTTON2:
+            stop_race(event)
+    else:
         print ("UNKNOWN SCREEN: %s" % screen)
 
 def buttonPressed(event):
