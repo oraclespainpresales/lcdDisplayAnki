@@ -569,93 +569,93 @@ def handleButton(button, screen, event):
             else:
                 # SETUP mode
                 if SETUPSTEP == -1:
-                  SETUPSTEP = SETUPSTEP + 1
-                  initDisplay(cad)
-                elif SETUPSTEP == 0:
-                  SETUPSTEP = SETUPSTEP + 1
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write(getPiId())
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("RIGHTBTN TO CONT")
-                elif SETUPSTEP == 1:
-                  # Retrieving RPi data from DB
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("RETRIEVING DATA")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("FOR THIS RPi...")
-                  url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
-                  result = getRest("", url)
-                  if result.status_code == 200:
                     SETUPSTEP = SETUPSTEP + 1
-                    data = json.loads(result.content)
-                    if len(data["items"]) > 0:
-                        demozone = data["items"][0]["id"]
-                        proxyport = data["items"][0]["proxyport"]
-                        cad.lcd.clear()
-                        cad.lcd.set_cursor(0, 0)
-                        cad.lcd.write("ZONE:" + demozone)
-                        cad.lcd.set_cursor(0, 1)
-                        cad.lcd.write("RIGHTBTN TO CONT")
-                    else:
-                        SETUPSTEP = -1
-                        cad.lcd.clear()
-                        cad.lcd.set_cursor(0, 0)
-                        cad.lcd.write("RPi NOT FOUND")
-                        cad.lcd.set_cursor(0, 1)
-                        cad.lcd.write("RIGHTBTN TO CONT")
-                  else:
+                    initDisplay(cad)
+                elif SETUPSTEP == 0:
+                    SETUPSTEP = SETUPSTEP + 1
                     cad.lcd.clear()
                     cad.lcd.set_cursor(0, 0)
-                    cad.lcd.write("ERROR: " + str(result.status_code))
+                    cad.lcd.write(getPiId())
                     cad.lcd.set_cursor(0, 1)
-                    cad.lcd.write("RIGHTBTN TO RTRY")
+                    cad.lcd.write("RIGHTBTN TO CONT")
+                elif SETUPSTEP == 1:
+                    # Retrieving RPi data from DB
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("RETRIEVING DATA")
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("FOR THIS RPi...")
+                    url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
+                    result = getRest("", url)
+                    if result.status_code == 200:
+                        SETUPSTEP = SETUPSTEP + 1
+                        data = json.loads(result.content)
+                        if len(data["items"]) > 0:
+                            demozone = data["items"][0]["id"]
+                            proxyport = data["items"][0]["proxyport"]
+                            cad.lcd.clear()
+                            cad.lcd.set_cursor(0, 0)
+                            cad.lcd.write("ZONE:" + demozone)
+                            cad.lcd.set_cursor(0, 1)
+                            cad.lcd.write("RIGHTBTN TO CONT")
+                        else:
+                            SETUPSTEP = -1
+                            cad.lcd.clear()
+                            cad.lcd.set_cursor(0, 0)
+                            cad.lcd.write("RPi NOT FOUND")
+                            cad.lcd.set_cursor(0, 1)
+                            cad.lcd.write("RIGHTBTN TO CONT")
+                    else:
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("ERROR: " + str(result.status_code))
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO RTRY")
                 elif SETUPSTEP == 2:
-                  # Retrieving device data from DB
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("GETTING DEVICE")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("FOR DEMOZONE...")
-                  result = get_device_conf(demozone)
-                  # -1: does not exist. -2: error. Other: OK
-                  if result == -1:
-                      cad.lcd.clear()
-                      cad.lcd.set_cursor(0, 0)
-                      cad.lcd.write("DEVICE NOT FOUND")
-                      cad.lcd.set_cursor(0, 1)
-                      cad.lcd.write("RIGHTBTN TO RTRY")
-                  elif result == -2:
-                      cad.lcd.clear()
-                      cad.lcd.set_cursor(0, 0)
-                      cad.lcd.write("ERROR GETTING DV")
-                      cad.lcd.set_cursor(0, 1)
-                      cad.lcd.write("RIGHTBTN TO RTRY")
-                  else:
-                      SETUPSTEP = SETUPSTEP + 1
-                      cad.lcd.clear()
-                      cad.lcd.set_cursor(0, 0)
-                      cad.lcd.write("DEVICE SET OK")
-                      cad.lcd.set_cursor(0, 1)
-                      cad.lcd.write("RIGHTBTN TO CONT")
+                    # Retrieving device data from DB
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("GETTING DEVICE")
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("FOR DEMOZONE...")
+                    result = get_device_conf(demozone)
+                    # -1: does not exist. -2: error. Other: OK
+                    if result == -1:
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("DEVICE NOT FOUND")
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO RTRY")
+                    elif result == -2:
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("ERROR GETTING DV")
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO RTRY")
+                    else:
+                        SETUPSTEP = SETUPSTEP + 1
+                        cad.lcd.clear()
+                        cad.lcd.set_cursor(0, 0)
+                        cad.lcd.write("DEVICE SET OK")
+                        cad.lcd.set_cursor(0, 1)
+                        cad.lcd.write("RIGHTBTN TO CONT")
                 elif SETUPSTEP == 3:
-                  # Setting all files based on retrieved data
-                  SETUPSTEP = SETUPSTEP + 1
-                  setDemozoneFile(demozone)
-                  setRedirectsFile(proxyport)
-                  setDronePortFile(proxyport)
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("SETUP COMPLETE")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("PLEASE REBOOT")
+                    # Setting all files based on retrieved data
+                    SETUPSTEP = SETUPSTEP + 1
+                    setDemozoneFile(demozone)
+                    setRedirectsFile(proxyport)
+                    setDronePortFile(proxyport)
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("SETUP COMPLETE")
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("PLEASE REBOOT")
                 elif SETUPSTEP == 4:
-                  cad.lcd.clear()
-                  cad.lcd.set_cursor(0, 0)
-                  cad.lcd.write("SETUP COMPLETE")
-                  cad.lcd.set_cursor(0, 1)
-                  cad.lcd.write("PLEASE REBOOT")
+                    cad.lcd.clear()
+                    cad.lcd.set_cursor(0, 0)
+                    cad.lcd.write("SETUP COMPLETE")
+                    cad.lcd.set_cursor(0, 1)
+                    cad.lcd.write("PLEASE REBOOT")
     elif screen == SNIFFERS:
         # 1: RESET SNIFFER FOR THERMO
         # 2: RESET SNIFFER FOR GROUND SHOCK
