@@ -445,57 +445,57 @@ def handleButton(button, screen, event):
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
 	  # Confirmation to previous command
-	  if buttonWaitingForConfirmation == BUTTON1:
-	    # REBOOT
-	    CMD = REBOOT_CMD
-	    msg = "REBOOTING"
-	  elif buttonWaitingForConfirmation == BUTTON2:
-	    # POWEROFF
-	    CMD = POWEROFF_CMD
-	    msg = "HALTING SYSTEM"
-	  else:
-	    # RESET RPi
-	    set_race_count(0)
-	    os.remove(pi_id_file)
-	    os.remove(demozone_file)
-	    shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
-	    os.remove(redirects_file)
-	    shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
-	    setRaceCountToZero(race_lap_Thermo_file)
-	    setRaceCountToZero(race_lap_GroundShock_file)
-	    setRaceCountToZero(race_lap_Skull_file)
-	    setRaceCountToZero(race_lap_Guardian_file)
-        # Remove any device file
-	    devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
-	    for file in devicefiles:
+        if buttonWaitingForConfirmation == BUTTON1:
+            # REBOOT
+            CMD = REBOOT_CMD
+            msg = "REBOOTING"
+        elif buttonWaitingForConfirmation == BUTTON2:
+    	    # POWEROFF
+    	    CMD = POWEROFF_CMD
+    	    msg = "HALTING SYSTEM"
+        else:
+            # RESET RPi
+            set_race_count(0)
+            os.remove(pi_id_file)
+            os.remove(demozone_file)
+            shutil.copy(SETUP_demozone_file + ".org", SETUP_demozone_file)
+            os.remove(redirects_file)
+            shutil.copy(SETUP_redirects_file + ".org", SETUP_redirects_file)
+            setRaceCountToZero(race_lap_Thermo_file)
+            setRaceCountToZero(race_lap_GroundShock_file)
+            setRaceCountToZero(race_lap_Skull_file)
+            setRaceCountToZero(race_lap_Guardian_file)
+            # Remove any device file
+            devicefiles = glob.glob("/home/pi/node/iotcswrapper/*.conf")
+            for file in devicefiles:
                 os.remove(file)
-	    cad.lcd.clear()
-	    cad.lcd.set_cursor(0, 0)
-	    cad.lcd.write("RESET COMPLETE")
-	    cad.lcd.set_cursor(0, 1)
-	    cad.lcd.write("PLEASE REBOOT")
-	    return
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  run_cmd(CMD)
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write("RESET COMPLETE")
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("PLEASE REBOOT")
+            return
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        run_cmd(CMD)
     if button == BUTTON1 or button == BUTTON2 or button == BUTTON3:
-	  buttonWaitingForConfirmation = button
-	  if button == BUTTON1:
-	     msg = "REBOOT REQUEST"
-	  elif button == BUTTON2:
-	     msg = "POWEROFF REQUEST"
-	  else:
-	     msg = "RPi RESET RQUEST"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
+        buttonWaitingForConfirmation = button
+        if button == BUTTON1:
+            msg = "REBOOT REQUEST"
+        elif button == BUTTON2:
+            msg = "POWEROFF REQUEST"
+        else:
+            msg = "RPi RESET RQUEST"
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("CONFIRM RIGHTBTN")
     else:
-	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
-	    buttonWaitingForConfirmation = -1
+        if buttonWaitingForConfirmation != -1:
+            displayInfoRotation(event.chip)
+            buttonWaitingForConfirmation = -1
   elif screen == WIFI and SETUP:
     # 1: RESET WIFI
     # 5: CONFIRM
