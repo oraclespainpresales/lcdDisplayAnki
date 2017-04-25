@@ -500,48 +500,48 @@ def handleButton(button, screen, event):
     # 1: RESET WIFI
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-	  # Confirmation to previous command
-	  buttonWaitingForConfirmation = -1
-	  msg = "RESETING WIFI"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  run_cmd(RESET_WIFI_CMD)
-	  displayInfoRotation(event.chip)
+        # Confirmation to previous command
+        buttonWaitingForConfirmation = -1
+        msg = "RESETING WIFI"
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        run_cmd(RESET_WIFI_CMD)
+        displayInfoRotation(event.chip)
     if button == BUTTON1:
-	  buttonWaitingForConfirmation = button
-	  msg = "WIFI RST REQUEST"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
+        buttonWaitingForConfirmation = button
+        msg = "WIFI RST REQUEST"
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("CONFIRM RIGHTBTN")
     else:
-	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
-	    buttonWaitingForConfirmation = -1
+        if buttonWaitingForConfirmation != -1:
+            displayInfoRotation(event.chip)
+            buttonWaitingForConfirmation = -1
   elif not SETUP:
     if button == BUTTON1 or button == BUTTON2:
         if screen == INIT:
-        	  buttonWaitingForConfirmation = button
-        	  if button == BUTTON1:
-        	     msg = "REBOOT REQUEST"
-        	  else:
-        	     msg = "POWEROFF REQUEST"
-        	  cad.lcd.clear()
-        	  cad.lcd.set_cursor(0, 0)
-        	  cad.lcd.write(msg)
-        	  cad.lcd.set_cursor(0, 1)
-        	  cad.lcd.write("CONFIRM RIGHTBTN")
+            buttonWaitingForConfirmation = button
+            if button == BUTTON1:
+                msg = "REBOOT REQUEST"
+            else:
+                msg = "POWEROFF REQUEST"
+            cad.lcd.clear()
+            cad.lcd.set_cursor(0, 0)
+            cad.lcd.write(msg)
+            cad.lcd.set_cursor(0, 1)
+            cad.lcd.write("CONFIRM RIGHTBTN")
         elif screen == WIFI:
             if button == BUTTON1:
-        	  buttonWaitingForConfirmation = button
-        	  msg = "WIFI RST REQUEST"
-        	  cad.lcd.clear()
-        	  cad.lcd.set_cursor(0, 0)
-        	  cad.lcd.write(msg)
-        	  cad.lcd.set_cursor(0, 1)
-        	  cad.lcd.write("CONFIRM RIGHTBTN")
+                buttonWaitingForConfirmation = button
+                msg = "WIFI RST REQUEST"
+                cad.lcd.clear()
+                cad.lcd.set_cursor(0, 0)
+                cad.lcd.write(msg)
+                cad.lcd.set_cursor(0, 1)
+                cad.lcd.write("CONFIRM RIGHTBTN")
     elif button == BUTTON5:
         if buttonWaitingForConfirmation != -1:
             if screen == INIT:
