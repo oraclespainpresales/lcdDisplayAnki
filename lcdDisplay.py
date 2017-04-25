@@ -115,7 +115,7 @@ def read_file(filename):
       first_line = f.readline()
       return(first_line)
   except (IOError):
-      print "%s file not found!!!"
+      print ("%s file not found!!!")
       return ""
 
 def get_dbcs():
