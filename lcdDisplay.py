@@ -662,83 +662,83 @@ def handleButton(button, screen, event):
     # 3: RESET SNIFFER FOR SKULL
     # 4: RESET SNIFFER FOR GUARDIAN
     # 5: RESET ALL
-	if button >= BUTTON1 and button <= BUTTON4:
-	  resetSniffer(event, button)
+    if button >= BUTTON1 and button <= BUTTON4:
+        resetSniffer(event, button)
 	else:
-	  resetSniffers(event)
+        resetSniffers(event)
   elif screen == IOTPROXY:
     # 1: RESTART
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-	  # Confirmation to previous command
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write("RESTARTING")
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("IOT PROXY...")
-	  run_cmd(RESET_IOTPROXY_CMD)
+        # Confirmation to previous command
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write("RESTARTING")
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("IOT PROXY...")
+        run_cmd(RESET_IOTPROXY_CMD)
     if button == BUTTON1:
-	  buttonWaitingForConfirmation = button
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write("RESTART REQUEST")
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
+        buttonWaitingForConfirmation = button
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write("RESTART REQUEST")
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("CONFIRM RIGHTBTN")
     else:
-	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
-	    buttonWaitingForConfirmation = -1
+        if buttonWaitingForConfirmation != -1:
+            displayInfoRotation(event.chip)
+            buttonWaitingForConfirmation = -1
   elif screen == REVERSEPORTS:
     # 1: RESTART AUTOSSH PROCESS
     # 2: RESTART NODEJS
     # 5: CONFIRM
     if buttonWaitingForConfirmation != -1 and button == BUTTON5:
-	  # Confirmation to previous command
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  if buttonWaitingForConfirmation == BUTTON1:
-	    # RESTART AUTOSSH PROCESS
-	    cad.lcd.write("RESTARTING SSH\nTUNNELING")
-	    subport = str(proxyport)[-2:]
-	    _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
-	    print _KILL_REVERSEPROXY_CMD
-	    run_cmd(RESET_AUTOSSH_CMD)
-	    run_cmd(_KILL_REVERSEPROXY_CMD)
-	  else:
-	    # RESTART NODEJS
-	    cad.lcd.write("RESTARTING\nNODEJS")
-	    run_cmd(RESET_NODEJS_CMD)
-	  buttonWaitingForConfirmation = -1
-	  displayInfoRotation(event.chip)
+        # Confirmation to previous command
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        if buttonWaitingForConfirmation == BUTTON1:
+            # RESTART AUTOSSH PROCESS
+            cad.lcd.write("RESTARTING SSH\nTUNNELING")
+            subport = str(proxyport)[-2:]
+            _KILL_REVERSEPROXY_CMD = KILL_REVERSEPROXY_CMD.replace("{PORT}", subport)
+            print _KILL_REVERSEPROXY_CMD
+            run_cmd(RESET_AUTOSSH_CMD)
+            run_cmd(_KILL_REVERSEPROXY_CMD)
+        else:
+            # RESTART NODEJS
+            cad.lcd.write("RESTARTING\nNODEJS")
+            run_cmd(RESET_NODEJS_CMD)
+        buttonWaitingForConfirmation = -1
+        displayInfoRotation(event.chip)
     if button == BUTTON1:
-	  buttonWaitingForConfirmation = button
-	  msg = "AUTOSSH RST REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
+        buttonWaitingForConfirmation = button
+        msg = "AUTOSSH RST REQ"
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("CONFIRM RIGHTBTN")
     elif button == BUTTON2:
-	  buttonWaitingForConfirmation = button
-	  msg = "NODEJS RESET REQ"
-	  cad.lcd.clear()
-	  cad.lcd.set_cursor(0, 0)
-	  cad.lcd.write(msg)
-	  cad.lcd.set_cursor(0, 1)
-	  cad.lcd.write("CONFIRM RIGHTBTN")
+        buttonWaitingForConfirmation = button
+        msg = "NODEJS RESET REQ"
+        cad.lcd.clear()
+        cad.lcd.set_cursor(0, 0)
+        cad.lcd.write(msg)
+        cad.lcd.set_cursor(0, 1)
+        cad.lcd.write("CONFIRM RIGHTBTN")
     else:
-	  if buttonWaitingForConfirmation != -1:
-	    displayInfoRotation(event.chip)
-	    buttonWaitingForConfirmation = -1
+        if buttonWaitingForConfirmation != -1:
+            displayInfoRotation(event.chip)
+            buttonWaitingForConfirmation = -1
   elif screen == RACE:
     # 1: START RACE
     # 2: STOP RACE
     if button == BUTTON1:
-	  start_race(event)
+        start_race(event)
     elif button == BUTTON2:
-	  stop_race(event)
+        stop_race(event)
   else:
-    print ("UNKNOWN SCREEN: %s" % screen)
+        print ("UNKNOWN SCREEN: %s" % screen)
 
 def buttonPressed(event):
 #  print "Event: "+str(event.pin_num)
