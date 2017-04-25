@@ -211,6 +211,8 @@ def get_lap(car):
 
 def displayInfoRotation(cad):
   global currentInfoDisplay
+  global listener
+  listener.deactivate()
   if currentInfoDisplay == INIT:
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
@@ -227,6 +229,7 @@ def displayInfoRotation(cad):
     raceDisplay(cad)
   else:
     print "No more pages"
+  listener.activate()
 
 def initDisplay(cad):
     cad.lcd.clear()
