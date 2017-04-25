@@ -166,10 +166,10 @@ def sync_bics():
             print ("Error synchronizing BICS: " + str(resp.status_code))
         return resp.status_code
     except requests.exceptions.Timeout:
-        print "Error synchronizing BICS: timeout"
+        print ("Error synchronizing BICS: timeout")
         return 408
   else:
-    print "Error retrieving IoTCS setup from DBCS: " + str(iotcs.status_code)
+    print ("Error retrieving IoTCS setup from DBCS: " + str(iotcs.status_code))
     return iotcs.status_code
 
 def get_current_event():
@@ -192,10 +192,10 @@ def get_current_event():
         maxInfoDisplay = rightMaxInfoDisplay
         return 200
     else:
-      print "Error retrieving current registered event from DBCS: " + str(currentevent.status_code)
+      print ("Error retrieving current registered event from DBCS: " + str(currentevent.status_code))
       return currentevent.status_code
   except:
-    print "Error retrieving event information"
+    print ("Error retrieving event information")
     return 500
 
 def get_lap(car):
@@ -206,7 +206,7 @@ def get_lap(car):
       first_line = f.readline()
       return(int(first_line))
   except (IOError):
-      print "%s file not found. Creating..." % filename
+      print ("%s file not found. Creating..." % filename)
       with open(filename,"w+") as f:
         f.write("0")
       os.chown(filename, piusergroup, piusergroup)
@@ -231,7 +231,7 @@ def displayInfoRotation(cad):
   elif currentInfoDisplay == RACE:
     raceDisplay(cad)
   else:
-    print "No more pages"
+    print ("No more pages")
   barrier.wait() # makes the listener to activate itself again
 
 def initDisplay(cad):
@@ -355,7 +355,7 @@ def resetLapFile(file):
       f.write("0")
       f.truncate()
   except (IOError):
-      print "%s file not found. Creating..." % file
+      print ("%s file not found. Creating..." % file)
       with open(file,"w+") as f:
         f.write("0")
       os.chown(file, piusergroup, piusergroup)
@@ -738,7 +738,7 @@ def handleButton(button, screen, event):
     elif button == BUTTON2:
 	  stop_race(event)
   else:
-    print "UNKNOWN SCREEN: %s" % screen
+    print ("UNKNOWN SCREEN: %s" % screen)
 
 def buttonPressed(event):
 #  print "Event: "+str(event.pin_num)
@@ -773,7 +773,7 @@ def get_race_status():
       first_line = f.readline()
       return(first_line)
   except (IOError):
-      print "%s file not found. Creating..." % race_status_file
+      print ("%s file not found. Creating..." % race_status_file)
       with open(race_status_file,"w+") as f:
         f.write("UNKNOWN")
       os.chown(race_status_file, piusergroup, piusergroup)
@@ -785,7 +785,7 @@ def get_race_count():
       first_line = f.readline()
       return(first_line)
   except (IOError):
-      print "%s file not found. Creating..." % race_count_file
+      print ("%s file not found. Creating..." % race_count_file)
       with open(race_count_file,"w+") as f:
         f.write("0")
       os.chown(race_count_file, piusergroup, piusergroup)
@@ -798,7 +798,7 @@ def set_race_status(status):
       f.write(status)
       f.truncate()
   except (IOError):
-      print "%s file not found. Creating..." % race_status_file
+      print ("%s file not found. Creating..." % race_status_file)
       with open(race_status_file,"w+") as f:
         f.write(status)
       os.chown(race_status_file, piusergroup, piusergroup)
@@ -810,7 +810,7 @@ def set_race_count(count):
       f.write("%s" % count)
       f.truncate()
   except (IOError):
-      print "%s file not found. Creating..." % race_count_file
+      print ("%s file not found. Creating..." % race_count_file)
       with open(race_count_file,"w+") as f:
         f.write(count)
       os.chown(race_count_file, piusergroup, piusergroup)
@@ -902,7 +902,7 @@ def getPiId():
       first_line = f.readline().rstrip()
       return(first_line)
   except (IOError):
-      print "%s file not found. Creating..." % pi_id_file
+      print ("%s file not found. Creating..." % pi_id_file)
       serial = getserial()
       with open(pi_id_file,"w+") as f:
         f.write(serial)
@@ -932,7 +932,7 @@ def getDronePortFile():
       first_line = f.readline()
       return(first_line)
   except (IOError):
-      print "%s file not found!!!" % drone_port_file
+      print ("%s file not found!!!" % drone_port_file)
       return "0"
 
 def setRedirectsFile(_proxyport):
