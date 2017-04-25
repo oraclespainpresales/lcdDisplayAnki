@@ -83,6 +83,8 @@ RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi
 CREATE_DEVICE_LINK = "ln -s /home/pi/node/iotcswrapper/{DEVICEFILE} /home/pi/node/iotcswrapper/current-device.conf"
 piusergroup=1000
 
+barrier = threading.Barrier(4)
+
 def getRest(message, url):
   #data_json = json.dumps(message)
   #headers = {'Content-type': 'application/json'}
@@ -211,8 +213,8 @@ def get_lap(car):
 
 def displayInfoRotation(cad):
   global currentInfoDisplay
-  global listener
-#  listener.deactivate()
+  global barrier
+  barrier.wait() # makes the listener to deactivate itself
   if currentInfoDisplay == INIT:
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
@@ -229,7 +231,7 @@ def displayInfoRotation(cad):
     raceDisplay(cad)
   else:
     print "No more pages"
-#  listener.activate()
+  barrier.wait() # makes the listener to activate itself again
 
 def initDisplay(cad):
     cad.lcd.clear()
@@ -969,4 +971,10 @@ listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
 #  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
   listener.register(i, pifacecad.IODIR_RISING_EDGE, buttonPressed)
-listener.activate()
+
+while True:
+    listener.activate()
+    barrier.wait()
+    listener.deactivate()
+    barrier.wait()
+    barrier = threading.Barrier(4)
