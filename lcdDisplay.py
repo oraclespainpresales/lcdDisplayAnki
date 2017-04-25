@@ -163,7 +163,7 @@ def sync_bics():
     try:
         resp = requests.post(url, auth=(username, password))
         if resp.status_code != 202:
-            print "Error synchronizing BICS: " + str(resp.status_code)
+            print ("Error synchronizing BICS: " + str(resp.status_code))
         return resp.status_code
     except requests.exceptions.Timeout:
         print "Error synchronizing BICS: timeout"
