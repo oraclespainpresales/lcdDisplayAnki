@@ -212,7 +212,7 @@ def get_lap(car):
 def displayInfoRotation(cad):
   global currentInfoDisplay
   global listener
-  listener.deactivate()
+#  listener.deactivate()
   if currentInfoDisplay == INIT:
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
@@ -229,7 +229,7 @@ def displayInfoRotation(cad):
     raceDisplay(cad)
   else:
     print "No more pages"
-  listener.activate()
+#  listener.activate()
 
 def initDisplay(cad):
     cad.lcd.clear()
@@ -967,5 +967,6 @@ else:
 initDisplay(cad)
 listener = pifacecad.SwitchEventListener(chip=cad)
 for i in range(8):
-  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
+#  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
+  listener.register(i, pifacecad.IODIR_RISING_EDGE, buttonPressed)
 listener.activate()
