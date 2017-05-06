@@ -8,7 +8,7 @@ import pprint
 import os
 import glob
 import shutil
-import threading
+#import threading
 
 pi_home="/home/pi"
 setup_home="/setup"
@@ -84,7 +84,7 @@ RESET_IOTPROXY_CMD = "forever stop iot;forever start --uid iot --append /home/pi
 CREATE_DEVICE_LINK = "ln -s /home/pi/node/iotcswrapper/{DEVICEFILE} /home/pi/node/iotcswrapper/current-device.conf"
 piusergroup=1000
 
-barrier = threading.Barrier(4)
+#barrier = threading.Barrier(4)
 
 def getRest(message, url):
   #data_json = json.dumps(message)
@@ -973,9 +973,11 @@ for i in range(8):
 #  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
   listener.register(i, pifacecad.IODIR_RISING_EDGE, buttonPressed)
 
-while True:
-    listener.activate()
-    barrier.wait()
-    listener.deactivate()
-    barrier.wait()
-    barrier = threading.Barrier(4)
+listener.activate()
+
+#while True:
+#    listener.activate()
+#    barrier.wait()
+#    listener.deactivate()
+#    barrier.wait()
+#    barrier = threading.Barrier(4)
