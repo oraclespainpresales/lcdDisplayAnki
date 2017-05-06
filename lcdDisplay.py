@@ -232,7 +232,7 @@ def displayInfoRotation(cad):
     raceDisplay(cad)
   else:
     print ("No more pages")
-  barrier.wait() # makes the listener to activate itself again
+#  barrier.wait() # makes the listener to activate itself again
 
 def initDisplay(cad):
     cad.lcd.clear()
