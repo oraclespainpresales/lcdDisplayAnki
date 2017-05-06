@@ -214,8 +214,8 @@ def get_lap(car):
 
 def displayInfoRotation(cad):
   global currentInfoDisplay
-  global barrier
-  barrier.wait() # makes the listener to deactivate itself
+#  global barrier
+#  barrier.wait() # makes the listener to deactivate itself
   if currentInfoDisplay == INIT:
     initDisplay(cad)
   elif currentInfoDisplay == WIFI:
