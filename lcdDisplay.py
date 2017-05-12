@@ -56,7 +56,7 @@ race_lap_Guardian_file=pi_home+setup_home+"/race_lap_Guardian.dat"
 race_lap_file=pi_home+setup_home+"/race_lap_%s.dat"
 dbcs_host_file=pi_home+setup_home+"/dbcs.dat"
 
-eventserver = "http://129.152.131.103:10001"
+eventserver = "http://helperhost:10001"
 EVENTURI = "/event/race"
 
 GET_IP_CMD = "hostname --all-ip-addresses"
@@ -65,9 +65,9 @@ RESET_WIFI_CMD = "sudo ifdown wlan0;sleep 5;sudo ifup wlan0"
 CHECK_INTERNET_CMD = "sudo ping -q -w 1 -c 1 8.8.8.8 > /dev/null 2>&1 && echo U || echo D"
 CHECK_IOTPROXY_CMD = "[ `ps -ef | grep -v grep | grep iotcswrapper| grep -v forever  | wc -l` -eq 1 ] && echo UP || echo DOWN"
 CHECK_IOTPROXY_STATUS_CMD = "curl http://localhost:8888/iot/status 2> /dev/null || echo ERROR"
-RESET_CURRENT_SPEED_DATA_CMD = "curl -i -m 5 -X POST http://129.152.131.150:8001/BAMHelper/ResetCurrentSpeedService/anki/reset/speed/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
-UPDATE_CURRENT_RACE_CMD = "curl -i -m 5 -X POST http://129.152.131.150:8001/BAMHelper/UpdateCurrentRaceService/anki/event/currentrace/{DEMOZONE}/{RACEID} 2>/dev/null | grep HTTP | awk '{print $2}'"
-RESET_RACE_DATA_CMD = "curl -i -m 5 -X POST http://129.152.131.150:8001/BAMHelper/ResetBAMDataService/anki/reset/bam/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
+RESET_CURRENT_SPEED_DATA_CMD = "curl -i -m 5 -X POST http://soahost:8001/BAMHelper/ResetCurrentSpeedService/anki/reset/speed/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
+UPDATE_CURRENT_RACE_CMD = "curl -i -m 5 -X POST http://soahost:8001/BAMHelper/UpdateCurrentRaceService/anki/event/currentrace/{DEMOZONE}/{RACEID} 2>/dev/null | grep HTTP | awk '{print $2}'"
+RESET_RACE_DATA_CMD = "curl -i -m 5 -X POST http://soahost:8001/BAMHelper/ResetBAMDataService/anki/reset/bam/{DEMOZONE} 2>/dev/null | grep HTTP | awk '{print $2}'"
 CHECK_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"netstat -ant | grep LISTEN | grep {DRONEPORT} | wc -l\""
 KILL_REVERSEPROXY_CMD = "ssh -i /home/pi/.ssh/anki_drone $reverseProxy \"/home/opc/killsshd.sh {PORT}\""
 CHECK_NODEUP_CMD = "wget -q -T 5 --tries 2 -O - http://$reverseProxy:{DRONEPORT}/drone > /dev/null && echo OK || echo NOK"
@@ -118,18 +118,13 @@ def read_file(filename):
       print ("%s file not found!!!")
       return ""
 
-def get_dbcs():
-  global dbcs_host_file
-  dbcs = read_file(dbcs_host_file)
-  return(dbcs.rstrip())
-
 def get_demozone():
   global demozone_file
   d = read_file(demozone_file)
   return(d.rstrip())
 
 def get_device_conf(_demozone):
-  url = get_dbcs() + "/apex/pdb1/anki/device/" + _demozone
+  url = "https://dbhost" + "/apex/pdb1/anki/device/" + _demozone
   device = getRest("", url)
   if device.status_code == 200:
     data = json.loads(device.content)
@@ -149,7 +144,7 @@ def get_device_conf(_demozone):
     return -2
 
 def sync_bics():
-  url = get_dbcs() + "/apex/pdb1/anki/iotcs/setup/" + get_demozone()
+  url = "https://dbhost" + "/apex/pdb1/anki/iotcs/setup/" + get_demozone()
   iotcs = getRest("", url)
   if iotcs.status_code == 200:
     data = json.loads(iotcs.content)
@@ -180,7 +175,7 @@ def get_current_event():
   EVENTSCHEDULED = False
   maxInfoDisplay = 2
   currentdate = time.strftime("%m-%d-%Y")
-  url = get_dbcs() + "/apex/pdb1/anki/events/" + get_demozone() + "/" + currentdate
+  url = "https://dbhost" + "/apex/pdb1/anki/events/" + get_demozone() + "/" + currentdate
   try:
     currentevent = getRest("", url)
     if currentevent.status_code == 200:
@@ -585,7 +580,7 @@ def handleButton(button, screen, event):
                     cad.lcd.write("RETRIEVING DATA")
                     cad.lcd.set_cursor(0, 1)
                     cad.lcd.write("FOR THIS RPi...")
-                    url = get_dbcs() + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
+                    url = "https://dbhost" + "/apex/pdb1/anki/demozone/rpi/" + getPiId()
                     result = getRest("", url)
                     if result.status_code == 200:
                         SETUPSTEP = SETUPSTEP + 1
