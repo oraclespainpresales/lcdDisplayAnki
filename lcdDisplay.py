@@ -162,7 +162,7 @@ def sync_bics():
     integrationid = data["items"][0]["integrationid"]
     url = "https://" + hostname + ":" + str(port) + "/iot/api/v2/apps/" + applicationid + "/integrations/" + integrationid + "/sync/now"
     try:
-        resp = requests.post(url, auth=(username, password))
+        resp = requests.post(url, verify=False, auth=(username, password))
         if resp.status_code != 202:
             print ("Error synchronizing BICS: " + str(resp.status_code))
         return resp.status_code
