@@ -743,32 +743,32 @@ def handleButton(button, screen, event):
     else:
         print ("UNKNOWN SCREEN: %s" % screen)
 
-def buttonPressed(event):
+def buttonPressed(buttonId):
 #  print "Event: "+str(event.pin_num)
   global currentInfoDisplay
 
-  if event.pin_num == BUTTONLEFT:
+  if buttonId == BUTTONLEFT:
     if currentInfoDisplay > 0:
       currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif event.pin_num == BUTTONRIGHT:
+  elif buttonId == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif event.pin_num == BUTTONMIDDLE:
+  elif buttonId == BUTTONMIDDLE:
     displayInfoRotation(event.chip)
     buttonWaitingForConfirmation = -1
-  elif event.pin_num >= BUTTON1 and event.pin_num <= BUTTON5:
+  elif buttonId >= BUTTON1 and buttonId <= BUTTON5:
     handleButton(event.pin_num,currentInfoDisplay, event)
   else:
     event.chip.lcd.set_cursor(0, 14)
-    event.chip.lcd.write(str(event.pin_num))
+#    event.chip.lcd.write(str(event.pin_num))
 
 def get_race_status():
   try:
@@ -972,12 +972,28 @@ else:
     get_current_event()
 
 initDisplay(cad)
-listener = pifacecad.SwitchEventListener(chip=cad)
-for i in range(8):
+#listener = pifacecad.SwitchEventListener(chip=cad)
+#for i in range(8):
 #  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
-  listener.register(i, pifacecad.IODIR_RISING_EDGE, buttonPressed)
+#  listener.register(i, pifacecad.IODIR_RISING_EDGE, buttonPressed)
 
-listener.activate()
+#listener.activate()
+
+FLAGS = [0,0,0,0,0,0,0,0]
+OLDFLAGS = [0,0,0,0,0,0,0,0]
+
+while True:
+    time.sleep(0.1)
+    for i,e in enumerate(FLAGS):
+        FLAGS[i] = cad.switches[i].value
+    #print FLAGS
+    for i,e in enumerate(FLAGS):
+        if OLDFLAGS[i] == 1 and FLAGS[i] == 0:
+            OLDFLAGS[i] = 0
+            print "PRESSED & UNPRESSED BUTTON #" + str(i)
+            buttonPressed(i)
+        else:
+            OLDFLAGS[i] = FLAGS[i]
 
 #while True:
 #    listener.activate()
