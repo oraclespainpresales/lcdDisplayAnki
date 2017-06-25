@@ -214,8 +214,9 @@ def get_lap(car):
       os.chown(filename, piusergroup, piusergroup)
       return 0
 
-def displayInfoRotation(cad):
+def displayInfoRotation():
   global currentInfoDisplay
+  global cad
 #  global barrier
 #  barrier.wait() # makes the listener to deactivate itself
   if currentInfoDisplay == INIT:
@@ -236,7 +237,8 @@ def displayInfoRotation(cad):
     print ("No more pages")
 #  barrier.wait() # makes the listener to activate itself again
 
-def initDisplay(cad):
+def initDisplay():
+    global cad
     cad.lcd.clear()
     cad.lcd.set_cursor(0, 0)
     if not SETUP:
@@ -248,7 +250,8 @@ def initDisplay(cad):
         cad.lcd.set_cursor(0, 1)
         cad.lcd.write(getPiName())
 
-def wifiDisplay(cad):
+def wifiDisplay():
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Wifi:"+get_my_wifi())
@@ -257,7 +260,8 @@ def wifiDisplay(cad):
   cad.lcd.set_cursor(15, 1)
   cad.lcd.write(check_internet())
 
-def eventDisplay(cad):
+def eventDisplay():
+  global cad
   today = time.strftime("%d-%b-%y")
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
@@ -275,6 +279,7 @@ def eventDisplay(cad):
   cad.lcd.write(msg)
 
 def sniffersDisplay(cad):
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("USB PORTS:    %02d" % get_usb_ports())
@@ -282,6 +287,7 @@ def sniffersDisplay(cad):
   cad.lcd.write("SNIF RUNNING: %02d" % get_sniffers_running())
 
 def iotproxyDisplay(cad):
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("WRAPPER: %s" % get_iotproxy_run_status())
@@ -289,6 +295,7 @@ def iotproxyDisplay(cad):
   cad.lcd.write("STATUS: %s" % get_iotproxy_status())
 
 def raceDisplay(cad):
+  global cad
   status=get_race_status()
   id=get_race_count()
   cad.lcd.clear()
@@ -299,6 +306,7 @@ def raceDisplay(cad):
   cad.lcd.write( " (%s)" % id)
 
 def raceLapsDisplay(cad):
+  global cad
   lap_Thermo=get_lap("Thermo")
   lap_GroundShock=get_lap("Ground Shock")
   lap_Skull=get_lap("Skull")
@@ -309,29 +317,32 @@ def raceLapsDisplay(cad):
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write("LAPS SK:%02d GU:%02d" % (lap_Skull,lap_Guardian))
 
-def resetSniffer(event,snifferNumber):
-  event.chip.lcd.clear()
-  event.chip.lcd.set_cursor(0, 0)
-  event.chip.lcd.write("Resetting\nSniffer "+str(snifferNumber))
+def resetSniffer(snifferNumber):
+  global cad
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("Resetting\nSniffer "+str(snifferNumber))
   msg = run_cmd(KILL_SNIFFER_CMD + " "+str(snifferNumber))
-  event.chip.lcd.set_cursor(0, 1)
-  event.chip.lcd.write(msg)
+  cad.lcd.set_cursor(0, 1)
+  cad.lcd.write(msg)
   time.sleep(5)
-  displayInfoRotation(event.chip)
+  displayInfoRotation()
 
-def resetSniffers(event):
-  event.chip.lcd.clear()
-  event.chip.lcd.set_cursor(0, 0)
-  event.chip.lcd.write("Resetting\nAll Sniffers")
+def resetSniffers():
+  global cad
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write("Resetting\nAll Sniffers")
   msg = run_cmd(KILL_SNIFFERS_CMD)
   time.sleep(5)
-  event.chip.lcd.clear()
-  event.chip.lcd.set_cursor(0, 0)
-  event.chip.lcd.write(msg)
+  cad.lcd.clear()
+  cad.lcd.set_cursor(0, 0)
+  cad.lcd.write(msg)
   time.sleep(5)
-  displayInfoRotation(event.chip)
+  displayInfoRotation()
 
-def reversePortsDisplay(cad):
+def reversePortsDisplay():
+  global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
   cad.lcd.write("Checking")
@@ -362,7 +373,8 @@ def resetLapFile(file):
         f.write("0")
       os.chown(file, piusergroup, piusergroup)
 
-def start_race(event):
+def start_race():
+    global cad
     status = get_race_status()
     if status == "RACING":
       cad.lcd.clear()
@@ -371,7 +383,7 @@ def start_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("started.Ignoring")
       time.sleep(5)
-      displayInfoRotation(event.chip)
+      displayInfoRotation()
     else:
       cad.lcd.clear()
       cad.lcd.set_cursor(0, 0)
@@ -394,9 +406,10 @@ def start_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("ID: %s" % id)
       time.sleep(5)
-      displayInfoRotation(event.chip)
+      displayInfoRotation()
 
-def stop_race(event):
+def stop_race():
+    global cad
     status = get_race_status()
     if status == "STOPPED":
       cad.lcd.clear()
@@ -405,7 +418,7 @@ def stop_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("stopped.Ignoring")
       time.sleep(5)
-      displayInfoRotation(event.chip)
+      displayInfoRotation()
     else:
       id=get_race_count()
       set_race_status("STOPPED")
@@ -431,9 +444,10 @@ def stop_race(event):
       cad.lcd.set_cursor(0, 1)
       cad.lcd.write("Result: %d" % result)
       time.sleep(5)
-      displayInfoRotation(event.chip)
+      displayInfoRotation()
 
-def handleButton(button, screen, event):
+def handleButton(button, screen):
+    global cad
     global buttonWaitingForConfirmation
     global SETUPSTEP
     global dbcs
@@ -497,7 +511,7 @@ def handleButton(button, screen, event):
             cad.lcd.write("CONFIRM RIGHTBTN")
         else:
             if buttonWaitingForConfirmation != -1:
-                displayInfoRotation(event.chip)
+                displayInfoRotation()
                 buttonWaitingForConfirmation = -1
     elif screen == WIFI and SETUP:
         # 1: RESET WIFI
@@ -510,7 +524,7 @@ def handleButton(button, screen, event):
             cad.lcd.set_cursor(0, 0)
             cad.lcd.write(msg)
             run_cmd(RESET_WIFI_CMD)
-            displayInfoRotation(event.chip)
+            displayInfoRotation()
         if button == BUTTON1:
             buttonWaitingForConfirmation = button
             msg = "WIFI RST REQUEST"
@@ -521,7 +535,7 @@ def handleButton(button, screen, event):
             cad.lcd.write("CONFIRM RIGHTBTN")
         else:
             if buttonWaitingForConfirmation != -1:
-                displayInfoRotation(event.chip)
+                displayInfoRotation()
                 buttonWaitingForConfirmation = -1
     elif not SETUP:
         if button == BUTTON1 or button == BUTTON2:
@@ -568,7 +582,7 @@ def handleButton(button, screen, event):
                     cad.lcd.set_cursor(0, 0)
                     cad.lcd.write(msg)
                     run_cmd(RESET_WIFI_CMD)
-                    displayInfoRotation(event.chip)
+                    displayInfoRotation()
             else:
                 # SETUP mode
                 if SETUPSTEP == -1:
@@ -666,9 +680,9 @@ def handleButton(button, screen, event):
         # 4: RESET SNIFFER FOR GUARDIAN
         # 5: RESET ALL
         if button >= BUTTON1 and button <= BUTTON4:
-            resetSniffer(event, button)
+            resetSniffer(button)
     	else:
-            resetSniffers(event)
+            resetSniffers()
     elif screen == IOTPROXY:
         # 1: RESTART
         # 5: CONFIRM
@@ -689,7 +703,7 @@ def handleButton(button, screen, event):
             cad.lcd.write("CONFIRM RIGHTBTN")
         else:
             if buttonWaitingForConfirmation != -1:
-                displayInfoRotation(event.chip)
+                displayInfoRotation()
                 buttonWaitingForConfirmation = -1
     elif screen == REVERSEPORTS:
         # 1: RESTART AUTOSSH PROCESS
@@ -712,7 +726,7 @@ def handleButton(button, screen, event):
                 cad.lcd.write("RESTARTING\nNODEJS")
                 run_cmd(RESET_NODEJS_CMD)
             buttonWaitingForConfirmation = -1
-            displayInfoRotation(event.chip)
+            displayInfoRotation()
         if button == BUTTON1:
             buttonWaitingForConfirmation = button
             msg = "AUTOSSH RST REQ"
@@ -731,15 +745,15 @@ def handleButton(button, screen, event):
             cad.lcd.write("CONFIRM RIGHTBTN")
         else:
             if buttonWaitingForConfirmation != -1:
-                displayInfoRotation(event.chip)
+                displayInfoRotation()
                 buttonWaitingForConfirmation = -1
     elif screen == RACE:
         # 1: START RACE
         # 2: STOP RACE
         if button == BUTTON1:
-            start_race(event)
+            start_race()
         elif button == BUTTON2:
-            stop_race(event)
+            stop_race()
     else:
         print ("UNKNOWN SCREEN: %s" % screen)
 
@@ -752,23 +766,23 @@ def buttonPressed(buttonId):
       currentInfoDisplay=currentInfoDisplay-1
     else:
       currentInfoDisplay=maxInfoDisplay
-    displayInfoRotation(event.chip)
+    displayInfoRotation()
     buttonWaitingForConfirmation = -1
   elif buttonId == BUTTONRIGHT:
     if currentInfoDisplay < maxInfoDisplay:
       currentInfoDisplay=currentInfoDisplay+1
     else:
       currentInfoDisplay=0
-    displayInfoRotation(event.chip)
+    displayInfoRotation()
     buttonWaitingForConfirmation = -1
   elif buttonId == BUTTONMIDDLE:
-    displayInfoRotation(event.chip)
+    displayInfoRotation()
     buttonWaitingForConfirmation = -1
   elif buttonId >= BUTTON1 and buttonId <= BUTTON5:
-    handleButton(event.pin_num,currentInfoDisplay, event)
+    handleButton(buttonId,currentInfoDisplay)
   else:
-    event.chip.lcd.set_cursor(0, 14)
-#    event.chip.lcd.write(str(event.pin_num))
+    cad.lcd.set_cursor(0, 14)
+#    cad.lcd.write(str(event.pin_num))
 
 def get_race_status():
   try:
