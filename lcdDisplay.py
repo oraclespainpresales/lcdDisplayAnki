@@ -993,8 +993,8 @@ initDisplay()
 
 #listener.activate()
 
-FLAGS = [0,0,0,0,0,0,0,0]
-OLDFLAGS = [0,0,0,0,0,0,0,0]
+FLAGS     = [0,0,0,0,0,0,0,0]
+PREVFLAGS = [0,0,0,0,0,0,0,0]
 
 while True:
     time.sleep(0.1)
@@ -1002,12 +1002,12 @@ while True:
         FLAGS[i] = cad.switches[i].value
     #print FLAGS
     for i,e in enumerate(FLAGS):
-        if OLDFLAGS[i] == 1 and FLAGS[i] == 0:
-            OLDFLAGS[i] = 0
-            print "PRESSED & UNPRESSED BUTTON #" + str(i)
+        if PREVFLAGS[i] == 1 and FLAGS[i] == 0:
+            PREVFLAGS[i] = 0
+            #print "PRESSED & UNPRESSED BUTTON #" + str(i)
             buttonPressed(i)
         else:
-            OLDFLAGS[i] = FLAGS[i]
+            PREVFLAGS[i] = FLAGS[i]
 
 #while True:
 #    listener.activate()
