@@ -220,19 +220,19 @@ def displayInfoRotation():
 #  global barrier
 #  barrier.wait() # makes the listener to deactivate itself
   if currentInfoDisplay == INIT:
-    initDisplay(cad)
+    initDisplay()
   elif currentInfoDisplay == WIFI:
-    wifiDisplay(cad)
+    wifiDisplay()
   elif currentInfoDisplay == EVENT:
-    eventDisplay(cad)
+    eventDisplay()
   elif currentInfoDisplay == SNIFFERS:
-    sniffersDisplay(cad)
+    sniffersDisplay()
   elif currentInfoDisplay == IOTPROXY:
-    iotproxyDisplay(cad)
+    iotproxyDisplay()
   elif currentInfoDisplay == REVERSEPORTS:
-    reversePortsDisplay(cad)
+    reversePortsDisplay()
   elif currentInfoDisplay == RACE:
-    raceDisplay(cad)
+    raceDisplay()
   else:
     print ("No more pages")
 #  barrier.wait() # makes the listener to activate itself again
@@ -278,7 +278,7 @@ def eventDisplay():
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write(msg)
 
-def sniffersDisplay(cad):
+def sniffersDisplay():
   global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
@@ -286,7 +286,7 @@ def sniffersDisplay(cad):
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write("SNIF RUNNING: %02d" % get_sniffers_running())
 
-def iotproxyDisplay(cad):
+def iotproxyDisplay():
   global cad
   cad.lcd.clear()
   cad.lcd.set_cursor(0, 0)
@@ -294,7 +294,7 @@ def iotproxyDisplay(cad):
   cad.lcd.set_cursor(0, 1)
   cad.lcd.write("STATUS: %s" % get_iotproxy_status())
 
-def raceDisplay(cad):
+def raceDisplay():
   global cad
   status=get_race_status()
   id=get_race_count()
@@ -305,7 +305,7 @@ def raceDisplay(cad):
   cad.lcd.write(status)
   cad.lcd.write( " (%s)" % id)
 
-def raceLapsDisplay(cad):
+def raceLapsDisplay():
   global cad
   lap_Thermo=get_lap("Thermo")
   lap_GroundShock=get_lap("Ground Shock")
@@ -587,7 +587,7 @@ def handleButton(button, screen):
                 # SETUP mode
                 if SETUPSTEP == -1:
                     SETUPSTEP = SETUPSTEP + 1
-                    initDisplay(cad)
+                    initDisplay()
                 elif SETUPSTEP == 0:
                     SETUPSTEP = SETUPSTEP + 1
                     cad.lcd.clear()
@@ -985,7 +985,7 @@ else:
     proxyport = getDronePortFile()
     get_current_event()
 
-initDisplay(cad)
+initDisplay()
 #listener = pifacecad.SwitchEventListener(chip=cad)
 #for i in range(8):
 #  listener.register(i, pifacecad.IODIR_FALLING_EDGE, buttonPressed)
